@@ -34,6 +34,11 @@ ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba")
 ADD_REQUIRED_DEPENDENCY("evart-client >= 2.0")
 ADD_REQUIRED_DEPENDENCY("omniORB4")
 
+# Search for Boost.
+SET(BOOST_COMPONENTS
+  filesystem system thread program_options unit_test_framework)
+SEARCH_FOR_BOOST()
+
 PKG_CONFIG_APPEND_LIBS("evart-to-corba")
 
 ADD_SUBDIRECTORY(src)

@@ -14,146 +14,48 @@
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include <stdexcept>
+#include <boost/format.hpp>
+#include <boost/make_shared.hpp>
 
-#include <evart-client.h>
+#include "application.hh"
 
-#include "corba-connection.hh"
-#include "corba-signal.hh"
-
-#define ENABLE_DEBUG
-
-#ifdef ENABLE_DEBUG
-# define LOG() std::cerr
-#else
-# define LOG() if (0) std::cerr
-#endif // ENABLE_DEBUG
-
-int handler (const evas_msg_t* msg, void* data);
-
-struct Application
-{
-  Application (const char* argv0)
-    : corba_ (argv0),
-      serverPtr_ (),
-      signalRank_ (-1)
-  {
-    LOG () << "Initialize" << std::endl;
-
-    CORBA::Object_ptr corba_obj = corba_.connectToServant ("signal", "");
-
-    try
-      {
-	serverPtr_ = dynamicGraph::CorbaSignal::_narrow (corba_obj);
-
-	if (CORBA::is_nil (serverPtr_))
-	  throw std::runtime_error ("failed to connect to the server.");
-
-	// Create CORBA signal.
-	signalRank_ = serverPtr_->createOutputVectorSignal ("waistPosition");
-      }
-    catch (CORBA::TRANSIENT& exception)
-      {
-	std::cerr << "Failed to connect to dynamic-graph." << std::endl
-		  << "1. Double check that the server is started." << std::endl
-		  << "2. Does the server and client version match?" << std::endl
-		  << std::endl
-		  << "Minor code: " << exception.minor () << std::endl;
-	throw;
-      }
-  }
-
-  void setup ()
-  {
-    LOG () << "Setup" << std::endl;
-    if (evas_acquire (EVAS_ON))
-      throw std::runtime_error ("failed to initialize");
-
-    const evas_body_list_t* bodyList = evas_body_list ();
-    if (!bodyList)
-      throw std::runtime_error ("failed to retrieve body list");
-
-    LOG () << "Number of bodies: " << bodyList->nbodies << std::endl;
-    if (bodyList->nbodies != 1)
-      throw std::runtime_error ("bad number of bodies");
-
-    const evas_body_markers_list_t* markersList = evas_body_markers_list (0);
-    if (!markersList)
-      throw std::runtime_error ("failed to retrieve markers list");
-
-    LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
-    if (markersList->nmarkers != 6)
-      throw std::runtime_error ("bad number of markers in body 0");
-
-    evas_sethandler (::handler, this);
-
-    if (evas_body_markers (0, EVAS_ON))
-      throw std::runtime_error ("failed to enable tracking of body 0");
-  }
-
-  void start ()
-  {
-    LOG () << "Start" << std::endl;
-    evas_listen ();
-  }
-
-  ~Application ()
-  {
-    LOG () << "Destruct" << std::endl;
-    if (evas_acquire (EVAS_OFF))
-      std::cerr << "failed to stop" << std::endl;
-  }
-
-  void writeWaistFrame (const evas_msg_t* msg)
-  {
-    dynamicGraph::DoubleSeq_var waistFrame = new dynamicGraph::DoubleSeq;
-
-    //FIXME: to be implemented.
-    waistFrame->length (3);
-    waistFrame[0] = msg->body_markers.markers[0][0];
-    waistFrame[1] = msg->body_markers.markers[0][1];
-    waistFrame[2] = msg->body_markers.markers[0][2];
-
-    serverPtr_->writeOutputVectorSignal(signalRank_, waistFrame);
-  }
-
-  void computeWaistFrame (const evas_msg_t*)
-  {
-    //FIXME: to be implemented.
-  }
-
-  void handler (const evas_msg_t* msg)
-  {
-    if (msg->type == EVAS_BODY_MARKERS && msg->body_markers.nmarkers == 6)
-      {
-	computeWaistFrame (msg);
-	writeWaistFrame (msg);
-      }
-  }
-
-  CorbaConnection corba_;
-  dynamicGraph::CorbaSignal_var serverPtr_;
-  CORBA::Long signalRank_;
-};
-
-int handler (const evas_msg_t* msg, void* data)
-{
-  Application* app = (Application*) data;
-  app->handler (msg);
-  return 0;
-}
-
-int main (int, const char* argv[])
+int main (int argc, char* argv[])
 {
   try
     {
-      Application app (argv[0]);
-      app.setup ();
-      app.start ();
+      Application app (argc, argv);
+      app.connectToMotionCapture ();
+
+      //FIXME: user should be able to change that.
+      boost::shared_ptr<TrackedBody> ptr (new WaistTracker (app));
+      app.addTrackedBody (ptr);
+
+      app.process ();
+    }
+  catch (PrintUsage& printUsage)
+    {
+      std::cout << printUsage.usage_ << std::endl;
+      return 0;
     }
   catch (const std::exception& e)
     {
       std::cerr << e.what () << std::endl;
       return 1;
     }
+  catch(CORBA::Exception& exception)
+    {
+      boost::format fmt
+	("A CORBA exception has been raised (exception name: ``%1%'').");
+      fmt % exception._name ();
+      std::cerr << fmt.str () << std::endl;
+      return 1;
+    }
+  catch (...)
+    {
+      std::cerr
+	<< "Unexpected exception catched. Aborting..."
+	<< std::endl;
+      return -1;
+    }
+  return 0;
 }

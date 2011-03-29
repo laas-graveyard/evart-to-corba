@@ -16,12 +16,15 @@
 include(../cmake/idl.cmake)
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
+INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}")
 
 GENERATE_IDL_FILE(corba-signal
   "${DYNAMIC_GRAPH_CORBA_DATAROOTDIR}/idl/dynamic-graph")
 
 ADD_EXECUTABLE(evart-to-corba
-  corba-connection.cc
+  corba-connection.cc corba-connection.hh
+  application.cc application.hh
+  tracked-body.cc tracked-body.hh
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
@@ -29,3 +32,5 @@ ADD_EXECUTABLE(evart-to-corba
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba evart-client)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba dynamic-graph-corba)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba omniORB4)
+
+TARGET_LINK_LIBRARIES(evart-to-corba ${Boost_LIBRARIES})
