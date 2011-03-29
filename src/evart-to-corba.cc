@@ -82,7 +82,7 @@ struct Application
       throw std::runtime_error ("failed to retrieve markers list");
 
     LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
-    if (markersList->nmarkers != 4)
+    if (markersList->nmarkers != 6)
       throw std::runtime_error ("bad number of markers in body 0");
 
     evas_sethandler (::handler, this);
@@ -104,15 +104,15 @@ struct Application
       std::cerr << "failed to stop" << std::endl;
   }
 
-  void writeWaistFrame ()
+  void writeWaistFrame (const evas_msg_t* msg)
   {
     dynamicGraph::DoubleSeq_var waistFrame = new dynamicGraph::DoubleSeq;
 
     //FIXME: to be implemented.
     waistFrame->length (3);
-    waistFrame[0] = 42.;
-    waistFrame[1] = 42.;
-    waistFrame[2] = 42.;
+    waistFrame[0] = msg->body_markers.markers[0][0];
+    waistFrame[1] = msg->body_markers.markers[0][1];
+    waistFrame[2] = msg->body_markers.markers[0][2];
 
     serverPtr_->writeOutputVectorSignal(signalRank_, waistFrame);
   }
@@ -124,10 +124,10 @@ struct Application
 
   void handler (const evas_msg_t* msg)
   {
-    if (msg->type == EVAS_BODY_MARKERS && msg->body_markers_list.nmarkers == 4)
+    if (msg->type == EVAS_BODY_MARKERS && msg->body_markers.nmarkers == 6)
       {
 	computeWaistFrame (msg);
-	writeWaistFrame ();
+	writeWaistFrame (msg);
       }
   }
 
