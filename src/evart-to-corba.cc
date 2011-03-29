@@ -34,7 +34,9 @@ int handler (const evas_msg_t* msg, void* data);
 struct Application
 {
   Application (const char* argv0)
-    : corba_ (argv0)
+    : corba_ (argv0),
+      serverPtr_ (),
+      signalRank_ (-1)
   {
     LOG () << "Initialize" << std::endl;
 
@@ -43,21 +45,22 @@ struct Application
     try
       {
 	serverPtr_ = dynamicGraph::CorbaSignal::_narrow (corba_obj);
+
+	if (CORBA::is_nil (serverPtr_))
+	  throw std::runtime_error ("failed to connect to the server.");
+
+	// Create CORBA signal.
+	signalRank_ = serverPtr_->createOutputVectorSignal ("waistPosition");
       }
     catch (CORBA::TRANSIENT& exception)
       {
-	std::cerr << "Failed to connect to the stack of tasks." << std::endl
+	std::cerr << "Failed to connect to dynamic-graph." << std::endl
 		  << "1. Double check that the server is started." << std::endl
 		  << "2. Does the server and client version match?" << std::endl
 		  << std::endl
 		  << "Minor code: " << exception.minor () << std::endl;
 	throw;
       }
-
-    if (CORBA::is_nil (serverPtr_))
-      throw std::runtime_error ("failed to connect to the server.");
-
-    // Create CORBA signal.
   }
 
   void setup ()
@@ -103,26 +106,34 @@ struct Application
 
   void writeWaistFrame ()
   {
-    // waistFrame = new nsCorba::DoubleSeq;
-    // waistFrame->length (3);
-    // serverPtr_->writeOutputVectorSignal();
+    dynamicGraph::DoubleSeq_var waistFrame = new dynamicGraph::DoubleSeq;
+
+    //FIXME: to be implemented.
+    waistFrame->length (3);
+    waistFrame[0] = 42.;
+    waistFrame[1] = 42.;
+    waistFrame[2] = 42.;
+
+    serverPtr_->writeOutputVectorSignal(signalRank_, waistFrame);
+  }
+
+  void computeWaistFrame (const evas_msg_t*)
+  {
+    //FIXME: to be implemented.
   }
 
   void handler (const evas_msg_t* msg)
   {
     if (msg->type == EVAS_BODY_MARKERS && msg->body_markers_list.nmarkers == 4)
       {
-	//computeWaistFrame (msg);
-	//writeWaistFrame (msg);
-
-	// std::cout << msg->body_markers.markers[i][0] << " ";
-	// std::cout << msg->body_markers.markers[i][1] << " ";
-	// std::cout << msg->body_markers.markers[i][2] << std::endl;
+	computeWaistFrame (msg);
+	writeWaistFrame ();
       }
   }
 
   CorbaConnection corba_;
   dynamicGraph::CorbaSignal_var serverPtr_;
+  CORBA::Long signalRank_;
 };
 
 int handler (const evas_msg_t* msg, void* data)
