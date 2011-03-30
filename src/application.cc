@@ -165,8 +165,6 @@ Application::connectToMotionCapture ()
   LOG () << "Number of bodies: " << bodyList->nbodies << std::endl;
   if (bodyList->nbodies == 0)
     throw std::runtime_error ("no bodies are being streamed");
-
-  evas_sethandler (::handler, this);
 }
 
 void
@@ -211,11 +209,15 @@ Application::process ()
   else
     while (!exiting)
       {
+#ifdef BROKEN
 	// Unpoll as many messages as possible to avoid receiving
 	// obsolete message kept in the buffer.
 	evas_msg_t msg;
+	evas_sethandler (0, 0);
 	while (evas_recv (&msg, 1e-1))
 	  {}
+#endif
+	evas_sethandler (::handler, this);
 	evas_listen ();
 	sleep (1);
       }

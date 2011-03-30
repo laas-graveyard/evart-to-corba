@@ -32,7 +32,7 @@ TrackedBody::TrackedBody (Application& app,
 			  const std::string& signalName,
 			  unsigned bodyId,
 			  unsigned nbMarkers)
-  : signalOutput_ (),
+  : signalOutput_ (new dynamicGraph::DoubleSeq),
     application_ (app),
     bodyId_ (bodyId),
     signalRank_ (-1),
