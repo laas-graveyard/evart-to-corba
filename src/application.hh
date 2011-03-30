@@ -66,6 +66,11 @@ public:
     trackedBodies_.push_back (trackedBody);
   }
 
+  bool listOnly () const
+  {
+    return listOnly_;
+  }
+
 protected:
   void listBodies ();
 private:

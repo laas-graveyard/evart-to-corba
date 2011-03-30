@@ -51,14 +51,14 @@ TrackedBody::TrackedBody (Application& app,
   LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
   if (markersList->nmarkers != nbMarkers)
     {
-      boost::format fmt ("bad number of markers in body %1");
+      boost::format fmt ("bad number of markers in body %1%");
       fmt % bodyId;
       throw std::runtime_error (fmt.str ());
     }
 
   if (evas_body_markers (bodyId, EVAS_ON))
     {
-      boost::format fmt ("failed to enable tracking of body %1");
+      boost::format fmt ("failed to enable tracking of body %1%");
       fmt % bodyId;
       throw std::runtime_error (fmt.str ());
     }
@@ -80,7 +80,7 @@ TrackedBody::writeSignal (const evas_msg_t* msg)
 
 
 WaistTracker::WaistTracker (Application& app)
-  : TrackedBody (app, "waistPosition", 0, 4)
+  : TrackedBody (app, "waistPosition", 0, 6)
 {}
 
 WaistTracker::~WaistTracker ()

@@ -182,8 +182,8 @@ Application::listBodies ()
   if (!nbodies)
     return;
 
-  boost::format fmt ("* %1[%2] - %3 marker(s)");
-  boost::format fmtMarker ("\t- %1");
+  boost::format fmt ("* %1%[%2%] - %3% marker(s)");
+  boost::format fmtMarker ("\t- %1%");
   for (unsigned i = 0; i < nbodies; ++i)
     {
       const evas_body_markers_list_t* bodyMarkers =

@@ -26,9 +26,12 @@ int main (int argc, char* argv[])
       Application app (argc, argv);
       app.connectToMotionCapture ();
 
-      //FIXME: user should be able to change that.
-      boost::shared_ptr<TrackedBody> ptr (new WaistTracker (app));
-      app.addTrackedBody (ptr);
+      if (!app.listOnly ())
+	{
+	  //FIXME: user should be able to change that.
+	  boost::shared_ptr<TrackedBody> ptr (new WaistTracker (app));
+	  app.addTrackedBody (ptr);
+	}
 
       app.process ();
     }
