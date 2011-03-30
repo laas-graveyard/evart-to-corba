@@ -197,5 +197,5 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
     << "-> "
     << originX << " | "
     << originY << " | "
-    << theta * 180. / M_PI << std::endl;
+    << theta * 180. / M_PI << " deg" << std::endl;
 }
