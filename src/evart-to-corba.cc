@@ -18,6 +18,7 @@
 #include <boost/make_shared.hpp>
 
 #include "application.hh"
+#include "waist-tracker.hh"
 
 int main (int argc, char* argv[])
 {

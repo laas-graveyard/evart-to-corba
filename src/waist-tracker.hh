@@ -13,38 +13,27 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_TRACKED_BODY_HH
-# define EVART_TO_CORBA_TRACKED_BODY_HH
-# include <string>
+#ifndef EVART_TO_CORBA_WAIST_TRACKER_HH
+# define EVART_TO_CORBA_WAIST_TRACKER_HH
+# include "tracked-body.hh"
 
-# include "application.hh"
+# include <boost/numeric/ublas/vector.hpp>
+# include <boost/numeric/ublas/matrix.hpp>
 
-class Application;
-
-class TrackedBody
+class WaistTracker : public TrackedBody
 {
 public:
-  TrackedBody (Application& app,
-	       const std::string& signalName,
-	       unsigned bodyId,
-	       unsigned nbMarkers);
-  ~TrackedBody ();
+  WaistTracker (Application& app);
+  ~WaistTracker ();
 
-  void writeSignal (const evas_msg_t* msg);
-  virtual void computeSignal (const evas_msg_t* msg) = 0;
-
-  unsigned nbMarkers () const
-  {
-    return nbMarkers_;
-  }
-
-protected:
-  dynamicGraph::DoubleSeq_var signalOutput_;
+  virtual void computeSignal (const evas_msg_t* msg);
 private:
-  Application& application_;
-  unsigned bodyId_;
-  unsigned signalRank_;
-  unsigned nbMarkers_;
+  /// \name Marker id.
+  /// \{
+  unsigned front_;
+  unsigned leftUp_;
+  unsigned rightUp_;
+  /// \}
 };
 
 #endif //! EVART_TO_CORBA_TRACKED_BODY_HH

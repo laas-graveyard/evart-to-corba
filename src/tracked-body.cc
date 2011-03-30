@@ -76,21 +76,3 @@ TrackedBody::writeSignal (const evas_msg_t* msg)
   application_.getServerPointer ()->writeOutputVectorSignal
     (signalRank_, signalOutput_);
 }
-
-
-
-WaistTracker::WaistTracker (Application& app)
-  : TrackedBody (app, "waistPosition", 0, 6)
-{}
-
-WaistTracker::~WaistTracker ()
-{}
-
-void
-WaistTracker::computeSignal (const evas_msg_t* msg)
-{
-  signalOutput_->length (3);
-  signalOutput_[0] = msg->body_markers.markers[0][0];
-  signalOutput_[1] = msg->body_markers.markers[0][1];
-  signalOutput_[2] = msg->body_markers.markers[0][2];
-}

@@ -202,7 +202,7 @@ Application::listBodies ()
 void
 Application::process ()
 {
-  LOG () << "Start processing" << std::endl;
+  std::cout << "Start processing" << std::endl;
 
   if (listOnly_)
     listBodies ();
