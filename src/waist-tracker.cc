@@ -181,7 +181,7 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   double theta1 = computeTheta (leftUp, leftBack);
   double theta2 = computeTheta (rightUp, rightBack);
 
-  if (theta1 != theta1 || theta2 != theta2 || std::abs (theta1 - theta2) > 1.)
+  if (theta1 != theta1 || theta2 != theta2)
     return;
   double theta = (theta1 + theta2) / 2.;
 
