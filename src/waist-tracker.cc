@@ -34,6 +34,7 @@
 #include "debug.hh"
 
 #include "waist-tracker.hh"
+#include "table-tracker.hh"
 
 namespace ublas = boost::numeric::ublas;
 
