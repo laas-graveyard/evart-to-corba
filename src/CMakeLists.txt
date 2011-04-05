@@ -26,6 +26,7 @@ ADD_EXECUTABLE(evart-to-corba
   application.cc application.hh
   tracked-body.cc tracked-body.hh
   waist-tracker.cc waist-tracker.hh
+  table-tracker.cc table-tracker.hh
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
