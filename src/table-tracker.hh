@@ -13,8 +13,8 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_WAIST_TRACKER_HH
-# define EVART_TO_CORBA_WAIST_TRACKER_HH
+#ifndef EVART_TO_CORBA_TABLE_TRACKER_HH
+# define EVART_TO_CORBA_TABLE_TRACKER_HH
 # include "tracked-body.hh"
 
 # include <boost/numeric/ublas/vector.hpp>
@@ -36,4 +36,4 @@ private:
   /// \}
 };
 
-#endif //! EVART_TO_CORBA_TRACKED_BODY_HH
+#endif //! EVART_TO_CORBA_TABLE_TRACKER_HH

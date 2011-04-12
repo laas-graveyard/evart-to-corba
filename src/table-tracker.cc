@@ -45,7 +45,7 @@ static const double TABLE_LENGTH = 0.3;
 static const double TABLE_HEIGHT = 0.25;
 
 TableTracker::TableTracker (Application& app)
-  : TrackedBody (app, "tablePosition", 1, 3),
+  : TrackedBody (app, "tablePosition", 0, 4),
     front_ (0),
     leftUp_ (1),
     rightUp_ (2)
@@ -58,23 +58,23 @@ void
 TableTracker::computeSignal (const evas_msg_t* msg)
 {
 /**
-    2 o----o  1       x <---------------o
+       ----o  BR      x <---------------o
       |    |                            |
       |    |                           \|/
       |    |                            y
-      `----o  0
+   FL o----o  BL
 **/
 
-  vector_t point0 = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
-  vector_t point1 = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
-  vector_t point2 = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
+  vector_t frontL = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
+  vector_t backR  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
+  vector_t backL  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
 
 
 
-  double originX = (point0[0] + point2[0])/2.0;
-  double originY = (point0[1] + point2[1])/2.0;
+  double originX = 0.001*(frontL[0] + backR[0])/2.0;
+  double originY = 0.001*(frontL[1] + backR[1])/2.0;
   double theta;
-  if( fabs(point1[1] - point2[1]) != 0.0 ) theta = atan( (point1[0] - point2[0]) / (point1[1] - point2[1]));
+  if( fabs(frontL[0] - backL[0]) != 0.0 ) theta = atan( (frontL[1] - backL[1]) / (frontL[0] - backL[0]));
   else theta = M_PI / 2.0;
 
   signalOutput_->length (3);

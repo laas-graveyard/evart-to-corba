@@ -19,6 +19,7 @@
 
 #include "application.hh"
 #include "waist-tracker.hh"
+#include "table-tracker.hh"
 
 int main (int argc, char* argv[])
 {
@@ -30,8 +31,10 @@ int main (int argc, char* argv[])
       if (!app.listOnly ())
 	{
 	  //FIXME: user should be able to change that.
-	  boost::shared_ptr<TrackedBody> ptr (new WaistTracker (app));
-	  app.addTrackedBody (ptr);
+          //boost::shared_ptr<TrackedBody> ptrWaist (new WaistTracker (app));
+          //app.addTrackedBody(ptrWaist);
+          boost::shared_ptr<TrackedBody> ptrTable (new TableTracker (app));
+          app.addTrackedBody(ptrTable);
 	}
 
       app.process ();
