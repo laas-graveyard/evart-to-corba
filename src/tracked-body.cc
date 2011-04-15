@@ -36,12 +36,16 @@ TrackedBody::TrackedBody (Application& app,
     application_ (app),
     bodyId_ (bodyId),
     signalRank_ (-1),
+    signalTimestampRank_ (-1),
     nbMarkers_ (nbMarkers)
 {
   // Create CORBA signal.
   signalRank_ =
     application_.getServerPointer ()->createOutputVectorSignal
     (signalName.c_str ());
+  signalTimestampRank_ =
+    application_.getServerPointer ()->createOutputVectorSignal
+    ((boost::format ("%1%Timestamp") % signalName).str ().c_str ());
 
   // Make sure the body exists and contains the expected number of markers.
   const evas_body_markers_list_t* markersList = evas_body_markers_list (bodyId);
@@ -75,4 +79,6 @@ TrackedBody::writeSignal (const evas_msg_t* msg)
 {
   application_.getServerPointer ()->writeOutputVectorSignal
     (signalRank_, signalOutput_);
+  application_.getServerPointer ()->writeOutputVectorSignal
+    (signalTimestampRank_, signalTimestampOutput_);
 }

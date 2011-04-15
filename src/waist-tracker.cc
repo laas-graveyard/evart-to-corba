@@ -193,6 +193,10 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   signalOutput_[1] = originY;
   signalOutput_[2] = theta;
 
+  signalTimestampOutput_->length (2);
+  signalOutput_[0] = msg->body_markers.tv_sec;
+  signalOutput_[1] = msg->body_markers.tv_usec;
+
   LOG ()
     << "-> "
     << originX << " | "

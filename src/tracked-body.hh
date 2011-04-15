@@ -40,10 +40,12 @@ public:
 
 protected:
   dynamicGraph::DoubleSeq_var signalOutput_;
+  dynamicGraph::DoubleSeq_var signalTimestampOutput_;
 private:
   Application& application_;
   unsigned bodyId_;
   unsigned signalRank_;
+  unsigned signalTimestampRank_;
   unsigned nbMarkers_;
 };
 
