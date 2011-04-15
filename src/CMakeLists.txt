@@ -35,3 +35,5 @@ PKG_CONFIG_USE_DEPENDENCY(evart-to-corba dynamic-graph-corba)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba omniORB4)
 
 TARGET_LINK_LIBRARIES(evart-to-corba ${Boost_LIBRARIES})
+
+INSTALL(TARGETS evart-to-corba DESTINATION bin)
