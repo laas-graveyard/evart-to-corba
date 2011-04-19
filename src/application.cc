@@ -233,12 +233,25 @@ Application::~Application ()
 void
 Application::handler (const evas_msg_t* msg)
 {
+  static const char* axisMessage[] = {"x", "y", "z"};
+
   if (msg->type == EVAS_BODY_MARKERS)
     {
       BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
 	{
 	  if (e && msg->body_markers.nmarkers == e->nbMarkers ())
 	    {
+	      for (unsigned i = 0; i < msg->body_markers.nmarkers; ++i)
+		for (unsigned j = 0; j < 3; ++j)
+		  if (msg->body_markers.markers[i][j] == EVAS_EMPTY)
+		    {
+#ifdef ENABLE_DEBUG
+		      boost::format fmt ("marker %1% (%2%) lost");
+		      fmt % i fmt % axisMessage[j];
+		      LOG () << fmt.str () << std::endl;
+#endif // ENABLE_DEBUG
+		    }
+
 	      e->computeSignal (msg);
 	      e->writeSignal (msg);
 	      return;
