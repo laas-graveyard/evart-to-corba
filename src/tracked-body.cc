@@ -33,6 +33,7 @@ TrackedBody::TrackedBody (Application& app,
 			  unsigned bodyId,
 			  unsigned nbMarkers)
   : signalOutput_ (new dynamicGraph::DoubleSeq),
+    signalTimestampOutput_ (new dynamicGraph::DoubleSeq),
     application_ (app),
     bodyId_ (bodyId),
     signalRank_ (-1),
