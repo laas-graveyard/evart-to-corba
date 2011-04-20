@@ -281,8 +281,6 @@ Application::process ()
 {
   LOG () << "Start processing" << std::endl;
 
-  std::cout << mode () << std::endl;
-
   if (mode () == MODE_BODY_LIST)
     listBodies ();
   else if (mode () == MODE_TRACKERS_LIST)
