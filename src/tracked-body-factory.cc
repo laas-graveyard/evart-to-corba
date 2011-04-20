@@ -24,6 +24,7 @@
 
 // Include all trackers
 #include "trackers/waist-tracker.hh"
+#include "trackers/three-points-tracker.hh"
 
 class Application;
 
@@ -38,6 +39,7 @@ std::map<std::string, cloneFunction_t> trackerRegister;
 void initializeTrackerRegister ()
 {
   REGISTER_TRACKER (WaistTracker);
+  REGISTER_TRACKER (ThreePointsTracker);
 }
 
 boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,

@@ -93,11 +93,11 @@ Application::Application (int argc, char* argv[])
      po::value<std::string>()->default_value (""),
      "dynamic-graph service kind")
 
-    ("evart-host,h",
+    ("evart-host",
      po::value<std::string>()->default_value (EVAS_STREAM_HOST),
      "evart stream server hostname")
 
-    ("evart-port,p",
+    ("evart-port",
      po::value<short unsigned>()->default_value (EVAS_STREAM_PORT),
      "evart stream server hostname")
 
