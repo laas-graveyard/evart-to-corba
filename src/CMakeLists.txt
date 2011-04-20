@@ -15,6 +15,7 @@
 
 include(../cmake/idl.cmake)
 
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}")
 
@@ -25,7 +26,10 @@ ADD_EXECUTABLE(evart-to-corba
   corba-connection.cc corba-connection.hh
   application.cc application.hh
   tracked-body.cc tracked-body.hh
-  waist-tracker.cc waist-tracker.hh
+  tracked-body-factory.cc tracked-body-factory.hh
+
+  trackers/waist-tracker.cc trackers/waist-tracker.hh
+
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )

@@ -28,18 +28,55 @@
 
 #include "application.hh"
 
+unsigned getBodyIdFromName (const std::string& name)
+{
+  const evas_body_list_t* bodyList = evas_body_list ();
+  if (!bodyList)
+    throw std::runtime_error ("failed to retrieve body list");
+
+  for (int i = 0; i < bodyList->nbodies; ++i)
+    if (name == bodyList->bodies[i])
+      return i;
+
+  boost::format fmt ("failed to retrieve the body id associated to '%1%'");
+  fmt % name;
+  throw std::runtime_error (fmt.str ());
+}
+
+std::string makeFilename (const std::string& type, const std::string& name)
+{
+  return (boost::format ("/tmp/evart-to-corba-%1%-%2%.dat")
+	  % type % name).str ();
+}
+
 TrackedBody::TrackedBody (Application& app,
 			  const std::string& signalName,
-			  unsigned bodyId,
+			  const std::string& bodyName,
 			  unsigned nbMarkers)
   : signalOutput_ (new dynamicGraph::DoubleSeq),
     signalTimestampOutput_ (new dynamicGraph::DoubleSeq),
     application_ (app),
-    bodyId_ (bodyId),
+    bodyName_ (bodyName),
+    bodyId_ (
+	     (application_.mode () == MODE_TRACKING)
+	     ? getBodyIdFromName (bodyName)
+	     : -1),
     signalRank_ (-1),
     signalTimestampRank_ (-1),
-    nbMarkers_ (nbMarkers)
+    nbMarkers_ (nbMarkers),
+    rawLog_ (makeFilename ("raw", bodyName_).c_str ()),
+    valueLog_ (makeFilename ("value", bodyName_).c_str ())
 {
+  if (application_.debug ())
+    {
+      rawLog_
+	<< "# bodyId | sec | usec | markerId | x | y | z"
+	<< std::endl;
+      valueLog_
+	<< "# bodyId | sec | usec | signalValue0 ... signalValueN"
+	<< std::endl;
+    }
+
   // Create CORBA signal.
   signalRank_ =
     application_.getServerPointer ()->createOutputVectorSignal
@@ -48,24 +85,27 @@ TrackedBody::TrackedBody (Application& app,
     application_.getServerPointer ()->createOutputVectorSignal
     ((boost::format ("%1%Timestamp") % signalName).str ().c_str ());
 
-  // Make sure the body exists and contains the expected number of markers.
-  const evas_body_markers_list_t* markersList = evas_body_markers_list (bodyId);
-  if (!markersList)
-    throw std::runtime_error ("failed to retrieve markers list");
-
-  LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
-  if (markersList->nmarkers != nbMarkers)
+  if (application_.mode () == MODE_TRACKING)
     {
-      boost::format fmt ("bad number of markers in body %1%");
-      fmt % bodyId;
-      throw std::runtime_error (fmt.str ());
-    }
+      // Make sure the body exists and contains the expected number of markers.
+      const evas_body_markers_list_t* markersList = evas_body_markers_list (bodyId_);
+      if (!markersList)
+	throw std::runtime_error ("failed to retrieve markers list");
 
-  if (evas_body_markers (bodyId, EVAS_ON))
-    {
-      boost::format fmt ("failed to enable tracking of body %1%");
-      fmt % bodyId;
-      throw std::runtime_error (fmt.str ());
+      LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
+      if (markersList->nmarkers - nbMarkers != 0)
+	{
+	  boost::format fmt ("bad number of markers in body %1% (id = %2%)");
+	  fmt % bodyName_ % bodyId_;
+	  throw std::runtime_error (fmt.str ());
+	}
+
+      if (evas_body_markers (bodyId_, EVAS_ON))
+	{
+	  boost::format fmt ("failed to enable tracking of body %1% (id = %2%)");
+	  fmt % bodyName_ % bodyId_;
+	  throw std::runtime_error (fmt.str ());
+	}
     }
 }
 
@@ -76,8 +116,45 @@ TrackedBody::~TrackedBody ()
 }
 
 void
-TrackedBody::writeSignal (const evas_msg_t* msg)
+TrackedBody::logRawData (const evas_msg_t* msg)
 {
+  if (!application_.debug ())
+    return;
+
+  for (int i = 0; i < msg->body_markers.nmarkers; ++i)
+    {
+      boost::format fmt ("%i %i %i %i %d %d %d");
+
+      fmt % msg->body_markers.iFrame;
+      fmt % msg->body_markers.index;
+      fmt % msg->body_markers.tv_sec;
+      fmt % msg->body_markers.tv_usec;
+
+      for (unsigned j = 0; j < 3; ++j)
+	fmt % msg->body_markers.markers[i][j];
+      rawLog_ << fmt.str () << std::endl;
+    }
+}
+
+void
+TrackedBody::logSignal ()
+{
+  if (!application_.debug ())
+    return;
+
+  valueLog_ << bodyId_ << " ";
+  for (unsigned i = 0; i < signalTimestampOutput_->length (); ++i)
+    valueLog_ << signalTimestampOutput_[i] << " ";
+  for (unsigned i = 0; i < signalOutput_->length (); ++i)
+    valueLog_ << signalOutput_[i] << " ";
+  valueLog_ << std::endl;
+}
+
+
+void
+TrackedBody::writeSignal ()
+{
+  logSignal ();
   application_.getServerPointer ()->writeOutputVectorSignal
     (signalRank_, signalOutput_);
   application_.getServerPointer ()->writeOutputVectorSignal

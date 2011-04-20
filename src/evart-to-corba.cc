@@ -18,7 +18,6 @@
 #include <boost/make_shared.hpp>
 
 #include "application.hh"
-#include "waist-tracker.hh"
 
 int main (int argc, char* argv[])
 {
@@ -26,14 +25,6 @@ int main (int argc, char* argv[])
     {
       Application app (argc, argv);
       app.connectToMotionCapture ();
-
-      if (!app.listOnly ())
-	{
-	  //FIXME: user should be able to change that.
-	  boost::shared_ptr<TrackedBody> ptr (new WaistTracker (app));
-	  app.addTrackedBody (ptr);
-	}
-
       app.process ();
     }
   catch (PrintUsage& printUsage)
