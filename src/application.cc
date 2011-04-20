@@ -190,7 +190,7 @@ Application::Application (int argc, char* argv[])
 void
 Application::connectToMotionCapture ()
 {
-  if (mode () == MODE_TRACKERS_LIST)
+  if (mode () != MODE_TRACKING)
     return;
 
   LOG () << "Connect to motion capture" << std::endl;
@@ -281,19 +281,24 @@ Application::process ()
 {
   LOG () << "Start processing" << std::endl;
 
+  std::cout << mode () << std::endl;
+
   if (mode () == MODE_BODY_LIST)
     listBodies ();
   else if (mode () == MODE_TRACKERS_LIST)
     listTrackers ();
   else if (mode () == MODE_TRACKING_SIMULATION)
-    while (!exiting)
-      {
-	BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
+    {
+      std::cout << "Start simulation" << std::endl;
+      while (!exiting)
 	{
-	  e->simulateSignal ();
-	  e->writeSignal ();
+	  BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
+	    {
+	      e->simulateSignal ();
+	      e->writeSignal ();
+	    }
 	}
-      }
+    }
   else
     {
       // Unpoll as many messages as possible to avoid receiving
@@ -306,6 +311,7 @@ Application::process ()
 	    {}
 	}
 
+      std::cout << "Start processing" << std::endl;
       while (!exiting)
 	{
 	  evas_sethandler (::handler, this);
