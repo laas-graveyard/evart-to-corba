@@ -31,6 +31,8 @@ ADD_EXECUTABLE(evart-to-corba
   trackers/waist-tracker.cc trackers/waist-tracker.hh
   trackers/three-points-tracker.cc trackers/three-points-tracker.hh
 
+  trackers/helmet.cc trackers/helmet.hh
+
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
