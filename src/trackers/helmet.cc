@@ -87,13 +87,19 @@ Helmet::computeSignal (const evas_msg_t* msg)
   vector_t b = ublas::make_vector_from_pointer
     (3, msg->body_markers.markers[0]);
 
+  vector_t t_ (3);
+  t_[0] = b[0];
+  t_[1] = b[1];
+  t_[2] = b[2];
+
   signalOutput_->length (6);
   signalOutput_[0] = t[0];
   signalOutput_[1] = t[1];
   signalOutput_[2] = t[2];
   signalOutput_[3] = 0.;
   signalOutput_[4] = 0.;
-  signalOutput_[5] = 0.; //FIXME: estimate theta here.
+  signalOutput_[5] = atan2 (ublas::norm_2 (t_- b),
+			    ublas::norm_2 (t_- b));
 
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_markers.tv_sec;
