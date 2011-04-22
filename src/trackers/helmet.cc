@@ -89,8 +89,8 @@ Helmet::computeSignal (const evas_msg_t* msg)
 
   vector_t t_ (3);
   t_[0] = b[0];
-  t_[1] = b[1];
-  t_[2] = b[2];
+  t_[1] = t[1];
+  t_[2] = t[2];
 
   signalOutput_->length (6);
   signalOutput_[0] = t[0];
