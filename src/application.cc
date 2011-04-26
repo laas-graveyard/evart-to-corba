@@ -171,11 +171,12 @@ Application::Application (int argc, char* argv[])
 	}
       catch (CORBA::TRANSIENT& exception)
 	{
-	  std::cerr << "Failed to connect to dynamic-graph." << std::endl
-		    << "1. Double check that the server is started." << std::endl
-		    << "2. Does the server and client version match?" << std::endl
-		    << std::endl
-		    << "Minor code: " << exception.minor () << std::endl;
+	  std::cerr
+	    << "Failed to connect to dynamic-graph." << std::endl
+	    << "1. Double check that the server is started." << std::endl
+	    << "2. Does the server and client version match?" << std::endl
+	    << std::endl
+	    << "Minor code: " << exception.minor () << std::endl;
 	  throw;
 	}
 
