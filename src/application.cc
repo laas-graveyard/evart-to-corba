@@ -149,6 +149,9 @@ Application::Application (int argc, char* argv[])
   evartHost_ = vm["evart-host"].as<std::string> ();
   evartPort_ = vm["evart-port"].as<short unsigned> ();
 
+  setupSignalHandler ();
+  connectToMotionCapture ();
+
   // Only start CORBA during tracking.
   if (mode_ == MODE_TRACKING || mode_ == MODE_TRACKING_SIMULATION)
     {
@@ -177,14 +180,14 @@ Application::Application (int argc, char* argv[])
 	}
 
       if (vm.count ("bodies"))
-	initializeTrackedBodies (vm["bodies"].as<std::vector<std::string> > ());
+	initializeTrackedBodies
+	  (vm["bodies"].as<std::vector<std::string> > ());
       else
 	{
 	  std::cerr << "nothing to track, exiting." << std::endl;
 	  exiting = true;
 	}
     }
-  setupSignalHandler ();
 }
 
 void
