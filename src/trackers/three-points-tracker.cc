@@ -92,21 +92,12 @@ ThreePointsTracker::computeSignal (const evas_msg_t* msg)
       OY[i] /= 1000.;
     }
 
-  vector_t OX_ = origin;
-  OX_[0] = OX[0];
-
-  vector_t OY_ = origin;
-  OX_[1] = OX[1];
-
-  double theta1 = atan2 ((OX_- origin)[0],
-			 (OX_ - OX)[1]);
-  double theta2 = atan2 ((OY_- origin)[0],
-			 (OY_ - OY)[1]);
+  double theta = atan2 (OX[1] - origin[1], OX[0] - origin[0]);
 
   signalOutput_->length (3);
   signalOutput_[0] = origin[0];
   signalOutput_[1] = origin[1];
-  signalOutput_[2] = theta1 + theta2 / 2.;
+  signalOutput_[2] = theta;
 
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_markers.tv_sec;
