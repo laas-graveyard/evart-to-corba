@@ -88,7 +88,9 @@ TrackedBody::TrackedBody (Application& app,
   if (application_.mode () == MODE_TRACKING)
     {
       // Make sure the body exists and contains the expected number of markers.
-      const evas_body_markers_list_t* markersList = evas_body_markers_list (bodyId_);
+      const evas_body_markers_list_t* markersList =
+	evas_body_markers_list (bodyId_);
+
       if (!markersList)
 	throw std::runtime_error ("failed to retrieve markers list");
 
@@ -100,6 +102,7 @@ TrackedBody::TrackedBody (Application& app,
 	  throw std::runtime_error (fmt.str ());
 	}
 
+      LOG () << "Enabling tracking for body id " << bodyId_ << std::endl;
       if (evas_body_markers (bodyId_, EVAS_ON))
 	{
 	  boost::format fmt ("failed to enable tracking of body %1% (id = %2%)");
