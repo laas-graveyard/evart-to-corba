@@ -66,7 +66,7 @@ const std::string name = "tiles";
 TRACKED_BODY_IMPL (ThreePointsTracker, name);
 
 ThreePointsTracker::ThreePointsTracker (Application& app)
-  : TrackedBody (app, name, ThreePointsTracker::BODY_NAME, 7),
+  : TrackedBody (app, name, ThreePointsTracker::BODY_NAME, 3),
     origin_ (0),
     OX_ (1),
     OY_ (2)
@@ -84,6 +84,13 @@ ThreePointsTracker::computeSignal (const evas_msg_t* msg)
     (3, msg->body_markers.markers[1]);
   vector_t OY = ublas::make_vector_from_pointer
     (3, msg->body_markers.markers[2]);
+
+  for (unsigned i = 0; i < 3; ++i)
+    {
+      origin[i] /= 1000.;
+      OX[i] /= 1000.;
+      OY[i] /= 1000.;
+    }
 
   vector_t OX_ = origin;
   OX_[0] = OX[0];
