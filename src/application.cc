@@ -346,7 +346,7 @@ Application::handler (const evas_msg_t* msg)
 #ifdef ENABLE_DEBUG
 		      static const char* axisMessage[] = {"x", "y", "z"};
 		      boost::format fmt ("marker %1% (%2%) lost");
-		      fmt % i fmt % axisMessage[j];
+		      fmt % i % axisMessage[j];
 		      LOG () << fmt.str () << std::endl;
 #endif // ENABLE_DEBUG
 		    }
