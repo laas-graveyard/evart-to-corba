@@ -202,9 +202,6 @@ Application::connectToMotionCapture ()
   evas_setport (evartPort_);
   evas_sethost (evartHost_.c_str ());
 
-  if (evas_acquire (EVAS_ON))
-    throw std::runtime_error ("failed to initialize");
-
   const evas_body_list_t* bodyList = evas_body_list ();
   if (!bodyList)
     throw std::runtime_error ("failed to retrieve body list");
@@ -326,8 +323,6 @@ Application::process ()
 Application::~Application ()
 {
   LOG () << "Destruct" << std::endl;
-  if (mode () == MODE_TRACKING && evas_acquire (EVAS_OFF))
-    std::cerr << "failed to stop" << std::endl;
 }
 
 void

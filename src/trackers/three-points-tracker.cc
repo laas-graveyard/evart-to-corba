@@ -98,10 +98,10 @@ ThreePointsTracker::computeSignal (const evas_msg_t* msg)
   vector_t OY_ = origin;
   OX_[1] = OX[1];
 
-  double theta1 = atan2 (ublas::norm_2 (OX_- origin),
-			 ublas::norm_2 (OX_ - OX));
-  double theta2 = atan2 (ublas::norm_2 (OY_- origin),
-			 ublas::norm_2 (OY_ - OY));
+  double theta1 = atan2 ((OX_- origin)[0],
+			 (OX_ - OX)[1]);
+  double theta2 = atan2 ((OY_- origin)[0],
+			 (OY_ - OY)[1]);
 
   signalOutput_->length (3);
   signalOutput_[0] = origin[0];
