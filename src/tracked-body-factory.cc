@@ -25,6 +25,7 @@
 // Include all trackers
 #include "trackers/waist-tracker.hh"
 #include "trackers/three-points-tracker.hh"
+#include "trackers/helmet.hh"
 
 class Application;
 
@@ -40,6 +41,7 @@ void initializeTrackerRegister ()
 {
   REGISTER_TRACKER (WaistTracker);
   REGISTER_TRACKER (ThreePointsTracker);
+  REGISTER_TRACKER (Helmet);
 }
 
 boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,

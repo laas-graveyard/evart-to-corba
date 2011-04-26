@@ -65,7 +65,7 @@ static const std::string name ("helmet");
 TRACKED_BODY_IMPL (Helmet, name);
 
 Helmet::Helmet (Application& app)
-  : TrackedBody (app, name, "Cap.prj[0]", 7),
+  : TrackedBody (app, name, "helmet", 4),
     fr_ (0),
     fl_ (1),
     t_ (2),
