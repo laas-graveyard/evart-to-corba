@@ -180,12 +180,32 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   vector_t back = ublas::make_vector_from_pointer
     (3, msg->body_markers.markers[6]);
 
-  checkWaistPlaneHorizontal (leftUp, leftBack);
-  checkWaistPlaneHorizontal (rightUp, rightBack);
-  checkWaistPlaneHorizontal (frontUp, frontDown);
+  bool abort = false;
+  bool abortLeft = false;
+  bool abortRight = false;
+  for (unsigned i = 0; i < 3; ++i)
+    {
+      if (leftUp[i] == EVAS_EMPTY
+	  || frontUp[i] == EVAS_EMPTY)
+	abort = true;
 
-  vector_t leftPlane = leftUp - leftBack;
-  vector_t rightPlane = rightUp - rightBack;
+      if (leftUp[i] == EVAS_EMPTY
+	  || leftBack[i] == EVAS_EMPTY)
+	abortLeft = true;
+
+      if (rightUp[i] == EVAS_EMPTY
+	  || rightBack[i] == EVAS_EMPTY)
+	abortRight = true;
+    }
+  if (abort || (abortLeft && abortRight))
+    return;
+
+  // checkWaistPlaneHorizontal (leftUp, leftBack);
+  // checkWaistPlaneHorizontal (rightUp, rightBack);
+  // checkWaistPlaneHorizontal (frontUp, frontDown);
+
+  // vector_t leftPlane = leftUp - leftBack;
+  // vector_t rightPlane = rightUp - rightBack;
 
   // LOG () << "leftUp: " << leftUp << std::endl;
   // LOG () << "leftBack: " << leftBack << std::endl;
@@ -196,8 +216,18 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   // LOG () << "right plane: " << rightPlane << std::endl;
 
   // Merge two computed thetas.
-  double theta1 = computeTheta (leftUp, leftBack);
-  double theta2 = computeTheta (rightUp, rightBack);
+  double theta1 = 0.;
+  double theta2 = 0.;
+
+  if (!abortLeft)
+    theta1 = computeTheta (leftUp, leftBack);
+  if (!abortRight)
+  theta2 = computeTheta (rightUp, rightBack);
+
+  if (abortLeft)
+    theta1 = theta2;
+  if (abortRight)
+    theta2 = theta1;
 
   if (theta1 != theta1 || theta2 != theta2)
     return;
