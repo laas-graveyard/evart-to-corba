@@ -114,8 +114,9 @@ TrackedBody::TrackedBody (Application& app,
 
 TrackedBody::~TrackedBody ()
 {
-  if (evas_body_markers (bodyId_, EVAS_OFF))
-    std::cerr << "failed to disable body tracking" << std::endl;
+  if (application_.mode () == MODE_TRACKING)
+    if (evas_body_markers (bodyId_, EVAS_OFF))
+      std::cerr << "failed to disable body tracking" << std::endl;
 }
 
 void
