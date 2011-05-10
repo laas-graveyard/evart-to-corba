@@ -65,7 +65,7 @@ static const std::string name ("table");
 TRACKED_BODY_IMPL (TableTracker, name);
 
 TableTracker::TableTracker (Application& app)
-  : TrackedBody (app, name, "tablePosition", 4),
+  : TrackedBody (app, name, name, 4),
     front_ (0),
     leftUp_ (1),
     rightUp_ (2)
