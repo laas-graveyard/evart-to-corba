@@ -196,24 +196,16 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
       if (rightUp[i] == EVAS_EMPTY
 	  || rightBack[i] == EVAS_EMPTY)
 	abortRight = true;
+
+      if (std::fabs (leftUp[i]) >= 100. * 10.
+	  || std::fabs (frontUp[i]) >= 100. * 10.
+	  || std::fabs (leftBack[i]) >= 100. * 10.
+	  || std::fabs (rightBack[i]) >= 100. * 10.)
+	abort = true;
     }
+
   if (abort || (abortLeft && abortRight))
     return;
-
-  // checkWaistPlaneHorizontal (leftUp, leftBack);
-  // checkWaistPlaneHorizontal (rightUp, rightBack);
-  // checkWaistPlaneHorizontal (frontUp, frontDown);
-
-  // vector_t leftPlane = leftUp - leftBack;
-  // vector_t rightPlane = rightUp - rightBack;
-
-  // LOG () << "leftUp: " << leftUp << std::endl;
-  // LOG () << "leftBack: " << leftBack << std::endl;
-  // LOG () << "rightUp: " << rightUp << std::endl;
-  // LOG () << "rightBack: " << rightBack << std::endl;
-  // LOG () << "left plane: " << leftPlane << std::endl;
-  // LOG () << "left plane(n): " << leftPlane / sqrt (leftPlane[0] * leftPlane[0] + leftPlane[1] * leftPlane[1]) << std::endl;
-  // LOG () << "right plane: " << rightPlane << std::endl;
 
   // Merge two computed thetas.
   double theta1 = 0.;
@@ -244,14 +236,6 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_markers.tv_sec;
   signalTimestampOutput_[1] = msg->body_markers.tv_usec;
-
-  // LOG ()
-  //   << msg->body_markers.tv_sec << " / "
-  //   << msg->body_markers.tv_usec
-  //   << "-> "
-  //   << originX << " | "
-  //   << originY << " | "
-  //   << theta * 180. / M_PI << " deg" << std::endl;
 }
 
 void
