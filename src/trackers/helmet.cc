@@ -78,14 +78,16 @@ Helmet::~Helmet ()
 void
 Helmet::computeSignal (const evas_msg_t* msg)
 {
+  marker_t* markers = (marker_t*) msg->body_markers.data
+    + msg->body_markers.markersOffset;
   vector_t fr = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
   vector_t fl = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
   vector_t t = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
   vector_t b = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
 
   vector_t t_ (3);
   t_[0] = b[0];

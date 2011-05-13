@@ -134,8 +134,10 @@ TrackedBody::logRawData (const evas_msg_t* msg)
       fmt % msg->body_markers.tv_sec;
       fmt % msg->body_markers.tv_usec;
 
+      marker_t* markers = (marker_t*) msg->body_markers.data
+	+ msg->body_markers.markersOffset;
       for (unsigned j = 0; j < 3; ++j)
-	fmt % msg->body_markers.markers[i][j];
+	fmt % markers[i][j];
       rawLog_ << fmt.str () << std::endl;
     }
 }

@@ -78,12 +78,14 @@ ThreePointsTracker::~ThreePointsTracker ()
 void
 ThreePointsTracker::computeSignal (const evas_msg_t* msg)
 {
+  marker_t* markers = (marker_t*) msg->body_markers.data
+    + msg->body_markers.markersOffset;
   vector_t origin = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
   vector_t OX = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[1]);
+    (3, markers[1]);
   vector_t OY = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[2]);
+    (3, markers[2]);
 
   for (unsigned i = 0; i < 3; ++i)
     {

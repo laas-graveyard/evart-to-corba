@@ -235,9 +235,12 @@ Application::listBodies ()
 	% bodyMarkers->index
 	% bodyMarkers->nmarkers;
       std::cout << fmt.str () << std::endl;
+
+      marker_t* markers = (marker_t*) bodyMarkers->data +
+	bodyMarkers->markersOffset;
       for (int j = 0; j < bodyMarkers->nmarkers; ++j)
 	{
-	  fmtMarker % bodyMarkers->markers[j];
+	  fmtMarker % markers[j];
 	  std::cout << fmtMarker.str () << std::endl;
 	}
     }
@@ -335,16 +338,18 @@ Application::handler (const evas_msg_t* msg)
 	{
 	  if (e && msg->body_markers.nmarkers - e->nbMarkers () == 0)
 	    {
+	      marker_t* markers = (marker_t*) msg->body_markers.data
+		+ msg->body_markers.markersOffset;
 	      for (int i = 0; i < msg->body_markers.nmarkers; ++i)
 		for (unsigned j = 0; j < 3; ++j)
-		  if (msg->body_markers.markers[i][j] == EVAS_EMPTY)
+		  if (markers[i][j] == EVAS_EMPTY)
 		    {
-#ifdef ENABLE_DEBUG
+		      //#ifdef ENABLE_DEBUG
 		      static const char* axisMessage[] = {"x", "y", "z"};
 		      boost::format fmt ("marker %1% (%2%) lost");
 		      fmt % i % axisMessage[j];
-		      LOG () << fmt.str () << std::endl;
-#endif // ENABLE_DEBUG
+		      std::cout << fmt.str () << std::endl;
+		      //#endif // ENABLE_DEBUG
 		    }
 
 	      e->computeSignal (msg);

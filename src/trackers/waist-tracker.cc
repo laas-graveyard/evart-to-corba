@@ -165,20 +165,22 @@ namespace
 void
 WaistTracker::computeSignal (const evas_msg_t* msg)
 {
+  marker_t* markers = (marker_t*) msg->body_markers.data
+    + msg->body_markers.markersOffset;
   vector_t frontUp = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[0]);
+    (3, markers[0]);
   vector_t leftUp = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[1]);
+    (3, markers[1]);
   vector_t rightUp = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[2]);
+    (3, markers[2]);
   vector_t leftBack = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[3]);
+    (3, markers[3]);
   vector_t rightBack = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[4]);
+    (3, markers[4]);
   vector_t frontDown = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[5]);
+    (3, markers[5]);
   vector_t back = ublas::make_vector_from_pointer
-    (3, msg->body_markers.markers[6]);
+    (3, markers[6]);
 
   bool abort = false;
   bool abortLeft = false;
@@ -255,7 +257,7 @@ WaistTracker::simulateSignal ()
 
   signalOutput_->length (3);
   for (unsigned i = 0; i < 3; ++i)
-    signalOutput_[i] =  die ();
+    signalOutput_[i] =  42./*die ()*/;
 
   signalTimestampOutput_->length (2);
 
