@@ -54,6 +54,16 @@ public:
     return nbMarkers_;
   }
 
+  unsigned bodyId () const
+  {
+    return bodyId_;
+  }
+
+  const std::string& bodyName () const
+  {
+    return bodyName_;
+  }
+
 protected:
   void logSignal ();
 

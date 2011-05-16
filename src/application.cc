@@ -224,8 +224,10 @@ Application::listBodies ()
   if (!nbodies)
     return;
 
-  boost::format fmt ("* %1%[%2%] - %3% marker(s)");
+  boost::format fmt ("* %1%[%2%] - %3% marker(s) %4% segment(s) %5% dof(s)");
   boost::format fmtMarker ("\t- %1%");
+  boost::format fmtSegment ("\t- %1%");
+  boost::format fmtDof ("\t- %1%");
   for (unsigned i = 0; i < nbodies; ++i)
     {
       const evas_body_markers_list_t* bodyMarkers =
@@ -233,15 +235,44 @@ Application::listBodies ()
       fmt
 	% bodyMarkers->name
 	% bodyMarkers->index
-	% bodyMarkers->nmarkers;
+	% bodyMarkers->nmarkers
+	% bodyMarkers->nsegments
+	% bodyMarkers->ndofs;
       std::cout << fmt.str () << std::endl;
 
-      marker_t* markers = (marker_t*) bodyMarkers->data +
+      std::cout << "Markers: " << std::endl;
+      string_t* markers = (string_t*) &bodyMarkers->data +
 	bodyMarkers->markersOffset;
       for (int j = 0; j < bodyMarkers->nmarkers; ++j)
 	{
 	  fmtMarker % markers[j];
 	  std::cout << fmtMarker.str () << std::endl;
+	}
+
+      std::cout << "Segments: " << std::endl;
+      string_t* segments = (string_t*) &bodyMarkers->data +
+	bodyMarkers->segmentsOffset;
+      for (int j = 0; j < bodyMarkers->nsegments; ++j)
+	{
+	  fmtSegment % segments[j];
+	  std::cout << fmtSegment.str () << std::endl;
+	}
+      std::cout << "Segments parent: " << std::endl;
+      uint32_t* segmentsParent = (uint32_t*) &bodyMarkers->data +
+	bodyMarkers->segmentsParentOffset;
+      for (int j = 0; j < bodyMarkers->nsegments; ++j)
+	{
+	  fmtSegment % segmentsParent[j];
+	  std::cout << fmtSegment.str () << std::endl;
+	}
+
+      std::cout << "Dofs: " << std::endl;
+      string_t* dofs = (string_t*) &bodyMarkers->data +
+	bodyMarkers->dofsOffset;
+      for (int j = 0; j < bodyMarkers->ndofs; ++j)
+	{
+	  fmtDof % dofs[j];
+	  std::cout << fmtDof.str () << std::endl;
 	}
     }
 }
@@ -336,9 +367,17 @@ Application::handler (const evas_msg_t* msg)
     {
       BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
 	{
-	  if (e && msg->body_markers.nmarkers - e->nbMarkers () == 0)
+	  if (e && msg->body_markers.index == e->bodyId ())
 	    {
-	      marker_t* markers = (marker_t*) msg->body_markers.data
+	      if (msg->body_markers.nmarkers - e->nbMarkers () != 0)
+		{
+		  std::cerr
+		    << "warning: marker count mismatch during processing."
+		    << std::endl;
+		  return;
+		}
+
+	      marker_t* markers = (marker_t*) &msg->body_markers.data
 		+ msg->body_markers.markersOffset;
 	      for (int i = 0; i < msg->body_markers.nmarkers; ++i)
 		for (unsigned j = 0; j < 3; ++j)

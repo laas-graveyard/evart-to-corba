@@ -59,10 +59,10 @@ static const double WAIST_HEIGHT = 0.25;
 
 boost::mt19937 gen;
 
-TRACKED_BODY_IMPL (WaistTracker, "waist");
+TRACKED_BODY_IMPL (WaistTracker, "waistModel");
 
 WaistTracker::WaistTracker (Application& app)
-  : TrackedBody (app, "waistPosition", WaistTracker::BODY_NAME, 7),
+  : TrackedBody (app, "waistPosition", WaistTracker::BODY_NAME, 8),
     front_ (0),
     leftUp_ (1),
     rightUp_ (2)
@@ -165,8 +165,15 @@ namespace
 void
 WaistTracker::computeSignal (const evas_msg_t* msg)
 {
-  marker_t* markers = (marker_t*) msg->body_markers.data
+  marker_t* markers = (marker_t*) &msg->body_markers.data
     + msg->body_markers.markersOffset;
+  segment_t* segments = (segment_t*) &msg->body_markers.data
+    + msg->body_markers.segmentsOffset;
+
+  for (unsigned i = 0; i < 7; ++i)
+    std::cout << segments[0][i] << " ";
+  std::cout << std::endl;
+
   vector_t frontUp = ublas::make_vector_from_pointer
     (3, markers[0]);
   vector_t leftUp = ublas::make_vector_from_pointer
