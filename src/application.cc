@@ -211,6 +211,25 @@ Application::connectToMotionCapture ()
     throw std::runtime_error ("no bodies are being streamed");
 }
 
+namespace
+{
+  void displaySegmentTree (std::ostream& stream,
+			   const evas_body_segments_list_t& segment,
+			   unsigned currentId = 0,
+			   unsigned indentLevel = 0)
+  {
+    boost::format fmt ("\t%1% %2%[%3%]");
+    fmt
+      % std::string (indentLevel, ' ')
+      % segment.hier[currentId].name
+      % currentId;
+    stream << fmt.str () << std::endl;
+    for (unsigned i = 0; i < segment.nsegments; ++i)
+      if (segment.hier[i].parent == currentId)
+	displaySegmentTree (stream, segment, i, indentLevel + 1);
+  }
+} // end of anonymous namespace.
+
 void
 Application::listBodies ()
 {
@@ -224,22 +243,53 @@ Application::listBodies ()
   if (!nbodies)
     return;
 
-  boost::format fmt ("* %1%[%2%] - %3% marker(s)");
-  boost::format fmtMarker ("\t- %1%");
+  boost::format fmt
+    ("* %1%[%2%] | %3% marker(s) - %4% segment(s) - %5% dof(s)");
+  boost::format fmtMarker ("\t- %1%[%2%]");
+  boost::format fmtDof ("\t- %1%[%2%]");
   for (unsigned i = 0; i < nbodies; ++i)
     {
       const evas_body_markers_list_t* bodyMarkers =
 	evas_body_markers_list (i);
+
+      const evas_body_segments_list_t* bodySegments =
+	evas_body_segments_list (i);
+
+      const evas_body_dofs_list_t* bodyDofs =
+	evas_body_dofs_list (i);
+
       fmt
 	% bodyMarkers->name
 	% bodyMarkers->index
-	% bodyMarkers->nmarkers;
+	% bodyMarkers->nmarkers
+	% bodySegments->nsegments
+	% bodyDofs->ndofs;
       std::cout << fmt.str () << std::endl;
-      for (int j = 0; j < bodyMarkers->nmarkers; ++j)
-	{
-	  fmtMarker % bodyMarkers->markers[j];
-	  std::cout << fmtMarker.str () << std::endl;
-	}
+
+      if (bodySegments->nsegments > 0)
+	for (int j = 0; j < bodyMarkers->nmarkers; ++j)
+	  {
+	    fmtMarker % bodyMarkers->markers[j] % j;
+	    std::cout << fmtMarker.str () << std::endl;
+	  }
+      else
+	std::cout << "\t no marker" << std::endl;
+      std::cout << std::endl;
+
+      if (bodySegments->nsegments > 0)
+	displaySegmentTree (std::cout, *bodySegments, 0, 0);
+      else
+	std::cout << "\t no segment" << std::endl;
+      std::cout << std::endl;
+
+      if (bodyDofs->ndofs > 0)
+	for (int j = 0; j < bodyDofs->ndofs; ++j)
+	  {
+	    fmtDof % bodyDofs->dofs[j] % j;
+	    std::cout << fmtDof.str () << std::endl;
+	  }
+      else
+	std::cout << "\t no dof" << std::endl;
     }
 }
 
