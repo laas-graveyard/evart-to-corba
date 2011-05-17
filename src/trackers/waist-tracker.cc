@@ -59,6 +59,31 @@ static const double WAIST_HEIGHT = 0.25;
 
 boost::mt19937 gen;
 
+std::vector<int64_t> to_timeval(const boost::posix_time::ptime &t)
+{
+  using namespace boost::posix_time;
+  using namespace boost::gregorian;
+  ptime time_start(date(1970,1,1));
+  time_duration diff = t - time_start;
+  std::vector<int64_t> res (2);
+  //drop off the fractional seconds...
+  res[0] = diff.ticks()/time_duration::rep_type::res_adjust();
+  //The following only works with microsecond resolution!
+  res[1] = diff.fractional_seconds();
+  return res;
+}
+std::vector<int64_t> to_timeval(const boost::posix_time::time_duration &d)
+{
+  using namespace boost::posix_time;
+  std::vector<int64_t> res (2);
+  //drop off the fractional seconds...
+  res[0] = d.ticks()/time_duration::rep_type::res_adjust();
+  //The following only works with microsecond resolution!
+  res[1] = d.fractional_seconds();
+  return res;
+}
+
+
 TRACKED_BODY_IMPL (WaistTracker, "waist");
 
 WaistTracker::WaistTracker (Application& app)
@@ -261,11 +286,8 @@ WaistTracker::simulateSignal ()
 
   ptime_t time =
     boost::posix_time::microsec_clock::universal_time ();
-  int64_t sec = time.time_of_day ().total_seconds();
-  int64_t usec = time.time_of_day ().total_microseconds () - sec * 1000000;
-
+  std::vector<int64_t> time_ = to_timeval (time);
   typedef boost::numeric::converter<double, int64_t> Int64_t2Double;
-
-  signalTimestampOutput_[0] = Int64_t2Double::convert (sec);
-  signalTimestampOutput_[1] = Int64_t2Double::convert (usec);
+  signalTimestampOutput_[0] = Int64_t2Double::convert (time_[0]);
+  signalTimestampOutput_[1] = Int64_t2Double::convert (time_[1]);
 }

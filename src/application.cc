@@ -328,7 +328,6 @@ Application::~Application ()
 void
 Application::handler (const evas_msg_t* msg)
 {
-
   if (msg->type == EVAS_BODY_MARKERS)
     {
       BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
