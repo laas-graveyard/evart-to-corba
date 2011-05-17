@@ -39,6 +39,7 @@ ADD_EXECUTABLE(evart-to-corba
   ${ALL_IDL_STUBS}
   )
 
+PKG_CONFIG_USE_DEPENDENCY(evart-to-corba jrl-mathtools)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba evart-client)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba dynamic-graph-corba)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba omniORB4)

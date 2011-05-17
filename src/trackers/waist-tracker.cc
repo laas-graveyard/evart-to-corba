@@ -33,6 +33,8 @@
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
 
+#include <jrl/mathtools/angle.hh>
+
 
 // uBlas extension
 #include "storage_adaptors.hpp"
@@ -233,8 +235,8 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
     return;
 
   // Merge two computed thetas.
-  double theta1 = 0.;
-  double theta2 = 0.;
+  jrlMathTools::Angle theta1 (0.);
+  jrlMathTools::Angle theta2 (0.);
 
   if (!abortLeft)
     theta1 = computeTheta (leftUp, leftBack);
@@ -248,7 +250,8 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
 
   if (theta1 != theta1 || theta2 != theta2)
     return;
-  double theta = (theta1 + theta2) / 2.;
+
+  jrlMathTools::Angle theta = theta1 + .5 * (theta2 - theta1);
 
   double originX = computeOriginX (theta, leftUp);
   double originY = computeOriginY (theta, frontUp);
@@ -256,7 +259,7 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   signalOutput_->length (3);
   signalOutput_[0] = originX;
   signalOutput_[1] = originY;
-  signalOutput_[2] = theta;
+  signalOutput_[2] = theta.value ();
 
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_markers.tv_sec;
