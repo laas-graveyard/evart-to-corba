@@ -19,6 +19,9 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+#include <boost/numeric/conversion/converter.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
 #include <evart-client.h>
 
 #include "corba-signal.hh"
@@ -146,9 +149,13 @@ TrackedBody::logSignal ()
   if (!application_.debug ())
     return;
 
+  typedef boost::numeric::converter<int64_t, double> Double2Int64_t;
+
   valueLog_ << bodyId_ << " ";
   for (unsigned i = 0; i < signalTimestampOutput_->length (); ++i)
-    valueLog_ << signalTimestampOutput_[i] << " ";
+    valueLog_
+      << Double2Int64_t::convert (signalTimestampOutput_[i])
+      << " ";
   for (unsigned i = 0; i < signalOutput_->length (); ++i)
     valueLog_ << signalOutput_[i] << " ";
   valueLog_ << std::endl;
