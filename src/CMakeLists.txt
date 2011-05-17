@@ -28,12 +28,18 @@ ADD_EXECUTABLE(evart-to-corba
   tracked-body.cc tracked-body.hh
   tracked-body-factory.cc tracked-body-factory.hh
 
+  tracked-segment.cc tracked-segment.hh
+  tracked-segment-factory.cc tracked-segment-factory.hh
+
   trackers/waist-tracker.cc trackers/waist-tracker.hh
   trackers/three-points-tracker.cc trackers/three-points-tracker.hh
 
   trackers/helmet.cc trackers/helmet.hh
 
   trackers/table-tracker.cc trackers/table-tracker.hh
+
+  segment-trackers/segment-waist-tracker.cc
+  segment-trackers/segment-waist-tracker.hh
 
   evart-to-corba.cc
   ${ALL_IDL_STUBS}

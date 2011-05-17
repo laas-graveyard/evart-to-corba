@@ -25,11 +25,17 @@ extern "C"
 # include <vector>
 
 # include <boost/shared_ptr.hpp>
+# include <boost/date_time/date.hpp>
+# include <boost/date_time/date_duration_types.hpp>
+# include <boost/date_time/posix_time/posix_time.hpp>
+# include <boost/date_time/posix_time/posix_time_types.hpp>
+
 
 # include "corba-connection.hh"
 # include "corba-signal.hh"
 
 # include "tracked-body.hh"
+# include "tracked-segment.hh"
 
 class PrintUsage
 {
@@ -46,6 +52,7 @@ namespace {
 } // end of anonymous namespace.
 
 class TrackedBody;
+class TrackedSegment;
 
 enum Modes
   {
@@ -78,6 +85,12 @@ public:
     trackedBodies_.push_back (trackedBody);
   }
 
+  void
+  addTrackedSegment (boost::shared_ptr<TrackedSegment> trackedSegment)
+  {
+    trackedSegments_.push_back (trackedSegment);
+  }
+
   Modes mode () const
   {
     return mode_;
@@ -90,6 +103,7 @@ public:
 
 protected:
   void initializeTrackedBodies (const std::vector<std::string>& trackers);
+  void initializeTrackedSegments (const std::vector<std::string>& segments);
 
   void listBodies ();
   void listTrackers ();
@@ -102,9 +116,19 @@ private:
   short unsigned evartPort_;
 
   std::vector<boost::shared_ptr<TrackedBody> > trackedBodies_;
+  std::vector<boost::shared_ptr<TrackedSegment> > trackedSegments_;
 
   Modes mode_;
   bool debug_;
 };
+
+unsigned getBodyIdFromName (const std::string& name);
+unsigned getSegmentIdFromName (unsigned bodyId, const std::string& name);
+
+
+std::vector<int64_t> to_timeval(const boost::posix_time::ptime &t);
+std::vector<int64_t> to_timeval(const boost::posix_time::time_duration &d);
+
+
 
 #endif //! EVART_TO_CORBA_EVART_TO_CORBA_HH

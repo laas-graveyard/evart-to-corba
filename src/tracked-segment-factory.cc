@@ -15,6 +15,7 @@
 
 #include <map>
 #include <stdexcept>
+#include <iostream>
 
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
@@ -22,39 +23,35 @@
 
 #include "tracked-body-factory.hh"
 
-// Include all trackers
-#include "trackers/waist-tracker.hh"
-#include "trackers/three-points-tracker.hh"
-#include "trackers/helmet.hh"
-#include "trackers/table-tracker.hh"
+// Include all segments
+#include "segment-trackers/segment-waist-tracker.hh"
 
 class Application;
 
-typedef boost::function<boost::shared_ptr<TrackedBody> (Application&)>
+typedef boost::function<boost::shared_ptr<TrackedSegment> (Application&)>
 cloneFunction_t;
 
-std::map<std::string, cloneFunction_t> trackerRegister;
+std::map<std::string, cloneFunction_t> trackerRegisterSegment;
 
-#define REGISTER_TRACKER(CLASS)				\
-  trackerRegister[CLASS::BODY_NAME] = CLASS::clone
+#define REGISTER_TRACKER(CLASS)						\
+  trackerRegisterSegment[CLASS::BODY_NAME + "::" + CLASS::SEGMENT_NAME]	\
+  = CLASS::clone
 
-void initializeTrackerRegister ()
+void initializeSegmentTrackerRegister ()
 {
-  REGISTER_TRACKER (WaistTracker);
-  REGISTER_TRACKER (ThreePointsTracker);
-  REGISTER_TRACKER (Helmet);
-  REGISTER_TRACKER (TableTracker);
+  REGISTER_TRACKER (WaistTrackerSegment);
 }
 
-boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,
-						   Application& app)
+boost::shared_ptr<TrackedSegment>
+trackedSegmentFactory (const std::string& name,
+		       Application& app)
 {
-  if (trackerRegister.empty ())
-    initializeTrackerRegister ();
+  if (trackerRegisterSegment.empty ())
+    initializeSegmentTrackerRegister ();
 
   std::map<std::string, cloneFunction_t>::const_iterator it =
-    trackerRegister.find (name);
-  if (it == trackerRegister.end ())
+    trackerRegisterSegment.find (name);
+  if (it == trackerRegisterSegment.end ())
     {
       boost::format fmt ("failed to find tracker '%1%'");
       fmt % name;
@@ -63,17 +60,17 @@ boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,
   return it->second (app);
 }
 
-void listMarkerTrackers ()
+void listSegmentTrackers ()
 {
-  if (trackerRegister.empty ())
-    initializeTrackerRegister ();
+  if (trackerRegisterSegment.empty ())
+    initializeSegmentTrackerRegister ();
 
   typedef std::pair<std::string, cloneFunction_t> elt_t;
 
-  std::cout << "Supported trackers:" << std::endl;
-  if (trackerRegister.empty ())
+  std::cout << "Supported segment trackers:" << std::endl;
+  if (trackerRegisterSegment.empty ())
     std::cout << "<no tracker>" << std::endl;
-  BOOST_FOREACH (const elt_t& e, trackerRegister)
+  BOOST_FOREACH (const elt_t& e, trackerRegisterSegment)
     {
       boost::format fmt ("* %1%");
       fmt % e.first;

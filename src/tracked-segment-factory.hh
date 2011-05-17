@@ -13,18 +13,19 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
-# define EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
+#ifndef EVART_TO_CORBA_TRACKED_SEGMENT_FACTORY_HH
+# define EVART_TO_CORBA_TRACKED_SEGMENT_FACTORY_HH
 # include <string>
 # include <boost/shared_ptr.hpp>
 
-# include "tracked-body.hh"
+# include "tracked-segment.hh"
 
 class Application;
 
-boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,
-						   Application& app);
+boost::shared_ptr<TrackedSegment>
+trackedSegmentFactory (const std::string& name,
+		       Application& app);
 
-void listMarkerTrackers ();
+void listSegmentTrackers ();
 
-#endif //! EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
+#endif //! EVART_TO_CORBA_TRACKED_SEGMENT_FACTORY_HH

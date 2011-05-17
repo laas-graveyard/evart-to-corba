@@ -18,10 +18,6 @@
 #include <stdexcept>
 #include <utility>
 
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/date_time/date.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
@@ -60,31 +56,6 @@ static const double WAIST_WIDTH = 0.3;
 static const double WAIST_HEIGHT = 0.25;
 
 boost::mt19937 gen;
-
-std::vector<int64_t> to_timeval(const boost::posix_time::ptime &t)
-{
-  using namespace boost::posix_time;
-  using namespace boost::gregorian;
-  ptime time_start(date(1970,1,1));
-  time_duration diff = t - time_start;
-  std::vector<int64_t> res (2);
-  //drop off the fractional seconds...
-  res[0] = diff.ticks()/time_duration::rep_type::res_adjust();
-  //The following only works with microsecond resolution!
-  res[1] = diff.fractional_seconds();
-  return res;
-}
-std::vector<int64_t> to_timeval(const boost::posix_time::time_duration &d)
-{
-  using namespace boost::posix_time;
-  std::vector<int64_t> res (2);
-  //drop off the fractional seconds...
-  res[0] = d.ticks()/time_duration::rep_type::res_adjust();
-  //The following only works with microsecond resolution!
-  res[1] = d.fractional_seconds();
-  return res;
-}
-
 
 TRACKED_BODY_IMPL (WaistTracker, "waist");
 
@@ -224,15 +195,18 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
 	  || rightBack[i] == EVAS_EMPTY)
 	abortRight = true;
 
-      if (std::fabs (leftUp[i]) >= 100. * 10.
-	  || std::fabs (frontUp[i]) >= 100. * 10.
-	  || std::fabs (leftBack[i]) >= 100. * 10.
-	  || std::fabs (rightBack[i]) >= 100. * 10.)
-	abort = true;
+      // if (std::fabs (leftUp[i]) >= 100. * 10.
+      // 	  || std::fabs (frontUp[i]) >= 100. * 10.
+      // 	  || std::fabs (leftBack[i]) >= 100. * 10.
+      // 	  || std::fabs (rightBack[i]) >= 100. * 10.)
+      // 	abort = true;
     }
 
   if (abort || (abortLeft && abortRight))
-    return;
+    {
+      std::cerr << "abort" << std::endl;
+      return;
+    }
 
   // Merge two computed thetas.
   jrlMathTools::Angle theta1 (0.);
