@@ -440,6 +440,11 @@ Application::process ()
 	      e->simulateSignal ();
 	      e->writeSignal ();
 	    }
+	  BOOST_FOREACH (boost::shared_ptr<TrackedSegment> e, trackedSegments_)
+	    {
+	      e->simulateSignal ();
+	      e->writeSignal ();
+	    }
 	}
     }
   else
