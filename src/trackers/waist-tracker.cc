@@ -60,7 +60,7 @@ boost::mt19937 gen;
 TRACKED_BODY_IMPL (WaistTracker, "waist");
 
 WaistTracker::WaistTracker (Application& app)
-  : TrackedBody (app, "waistPosition", WaistTracker::BODY_NAME, 7),
+  : TrackedBody (app, "waistPosition", WaistTracker::BODY_NAME, 10),
     front_ (0),
     leftUp_ (1),
     rightUp_ (2)

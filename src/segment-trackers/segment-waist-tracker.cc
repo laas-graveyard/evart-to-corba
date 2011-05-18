@@ -63,9 +63,9 @@ TRACKED_SEGMENT_IMPL (WaistTrackerSegment, "waist", "origin");
 WaistTrackerSegment::WaistTrackerSegment (Application& app)
   : TrackedSegment (app,
 		    WaistTrackerSegment::BODY_NAME,
-		    WaistTrackerSegment::SEGMENT_NAME,
 		    WaistTrackerSegment::BODY_NAME,
-		    7, 1)
+		    WaistTrackerSegment::SEGMENT_NAME,
+		    10, 1)
 {}
 
 WaistTrackerSegment::~WaistTrackerSegment ()

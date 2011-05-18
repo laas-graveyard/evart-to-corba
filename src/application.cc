@@ -257,7 +257,7 @@ Application::Application (int argc, char* argv[])
 	  exiting = true;
 	}
 
-      if (trackedBodies_.empty () || trackedSegments_.empty ())
+      if (trackedBodies_.empty () && trackedSegments_.empty ())
 	{
 	  std::cerr << "no running trackers, exiting..." << std::endl;
 	  exiting = true;
@@ -292,11 +292,12 @@ namespace
 			   unsigned currentId = 0,
 			   unsigned indentLevel = 0)
   {
-    boost::format fmt ("\t%1% %2%[%3%]");
+    boost::format fmt ("\t%1% %2%[%3%] %4%");
     fmt
       % std::string (indentLevel, ' ')
       % segment.hier[currentId].name
-      % currentId;
+      % currentId
+      % ((segment.hier[currentId].parent < 0) ? "ROOT" : "");
     stream << fmt.str () << std::endl;
     for (unsigned i = 0; i < segment.nsegments; ++i)
       if (segment.hier[i].parent - currentId == 0)
@@ -518,7 +519,7 @@ Application::handler (const evas_msg_t* msg)
 		      LOG () << fmt.str () << std::endl;
 #endif // ENABLE_DEBUG
 		    }
-	      
+
 	      e->computeSignal (msg);
 	      e->logRawData (msg);
 	      e->writeSignal ();
