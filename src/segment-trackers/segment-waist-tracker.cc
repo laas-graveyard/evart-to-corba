@@ -82,6 +82,7 @@ WaistTrackerSegment::computeSignal (const evas_msg_t* msg)
     if (data[i] == EVAS_EMPTY)
       return;
 
+#ifdef EVART_TO_CORBA_FULL_CONFIGURATION
   signalOutput_->length (7);
   for (unsigned i = 0; i < 7; ++i)
     {
@@ -93,6 +94,17 @@ WaistTrackerSegment::computeSignal (const evas_msg_t* msg)
       else
 	signalOutput_[i] *= M_PI / 180.;
     }
+#else
+  signalOutput_->length (3);
+  for (unsigned i = 0; i < 2; ++i)
+    {
+      signalOutput_[i] = data[i];
+      signalOutput_[i] /= 1000.;
+    }
+
+  signalOutput_[2] = data[5];
+  signalOutput_[2] *= M_PI / 180.;
+#endif // EVART_TO_CORBA_FULL_CONFIGURATION
 
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_segments.tv_sec;
@@ -114,9 +126,15 @@ WaistTrackerSegment::simulateSignal ()
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> >
     die (waistTrackerSegment::gen, dist);
 
+#ifdef EVART_TO_CORBA_FULL_CONFIGURATION
   signalOutput_->length (7);
   for (unsigned i = 0; i < 7; ++i)
     signalOutput_[i] =  die ();
+#else
+  signalOutput_->length (3);
+  for (unsigned i = 0; i < 3; ++i)
+    signalOutput_[i] =  die ();
+#endif // EVART_TO_CORBA_FULL_CONFIGURATION
 
   signalTimestampOutput_->length (2);
 
