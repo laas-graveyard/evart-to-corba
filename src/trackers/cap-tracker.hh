@@ -13,27 +13,32 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_WAIST_TRACKER_HH
-# define EVART_TO_CORBA_WAIST_TRACKER_HH
+#ifndef EVART_TO_CORBA_CAP_TRACKER_HH
+# define EVART_TO_CORBA_CAP_TRACKER_HH
 # include "tracked-body.hh"
+
+# include <boost/make_shared.hpp>
 
 # include <boost/numeric/ublas/vector.hpp>
 # include <boost/numeric/ublas/matrix.hpp>
 
-class WaistTracker : public TrackedBody
+class CapTracker : public TrackedBody
 {
+  TRACKED_BODY_DECL (CapTracker);
 public:
-  WaistTracker (Application& app);
-  ~WaistTracker ();
+  CapTracker (Application& app);
+  ~CapTracker ();
 
   virtual void computeSignal (const evas_msg_t* msg);
+  virtual void simulateSignal ();
 private:
   /// \name Marker id.
   /// \{
-  unsigned front_;
-  unsigned leftUp_;
-  unsigned rightUp_;
+  unsigned fr_;
+  unsigned fl_;
+  unsigned t_;
+  unsigned b_;
   /// \}
 };
 
-#endif //! EVART_TO_CORBA_TRACKED_BODY_HH
+#endif //! EVART_TO_CORBA_CAP_TRACKER_HH

@@ -18,25 +18,12 @@
 #include <boost/make_shared.hpp>
 
 #include "application.hh"
-#include "waist-tracker.hh"
-#include "table-tracker.hh"
 
 int main (int argc, char* argv[])
 {
   try
     {
       Application app (argc, argv);
-      app.connectToMotionCapture ();
-
-      if (!app.listOnly ())
-	{
-	  //FIXME: user should be able to change that.
-          //boost::shared_ptr<TrackedBody> ptrWaist (new WaistTracker (app));
-          //app.addTrackedBody(ptrWaist);
-          boost::shared_ptr<TrackedBody> ptrTable (new TableTracker (app));
-          app.addTrackedBody(ptrTable);
-	}
-
       app.process ();
     }
   catch (PrintUsage& printUsage)

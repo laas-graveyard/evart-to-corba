@@ -16,7 +16,11 @@
 #ifndef EVART_TO_CORBA_EVART_TO_CORBA_HH
 # define EVART_TO_CORBA_EVART_TO_CORBA_HH
 # include <stdexcept>
+
+extern "C"
+{
 # include <evart-client.h>
+}
 
 # include <vector>
 
@@ -43,6 +47,14 @@ namespace {
 
 class TrackedBody;
 
+enum Modes
+  {
+    MODE_TRACKING,
+    MODE_TRACKING_SIMULATION,
+    MODE_BODY_LIST,
+    MODE_TRACKERS_LIST
+  };
+
 class Application
 {
 public:
@@ -66,24 +78,33 @@ public:
     trackedBodies_.push_back (trackedBody);
   }
 
-  bool listOnly () const
+  Modes mode () const
   {
-    return listOnly_;
+    return mode_;
+  }
+
+  bool debug () const
+  {
+    return debug_;
   }
 
 protected:
+  void initializeTrackedBodies (const std::vector<std::string>& trackers);
+
   void listBodies ();
+  void listTrackers ();
 private:
   CorbaConnection corba_;
   dynamicGraph::CorbaSignal_var serverPtr_;
   CORBA::Long signalRank_;
 
   std::string evartHost_;
-  unsigned evartPort_;
+  short unsigned evartPort_;
 
   std::vector<boost::shared_ptr<TrackedBody> > trackedBodies_;
 
-  bool listOnly_;
+  Modes mode_;
+  bool debug_;
 };
 
 #endif //! EVART_TO_CORBA_EVART_TO_CORBA_HH

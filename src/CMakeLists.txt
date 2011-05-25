@@ -15,6 +15,7 @@
 
 include(../cmake/idl.cmake)
 
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}")
 
@@ -25,8 +26,15 @@ ADD_EXECUTABLE(evart-to-corba
   corba-connection.cc corba-connection.hh
   application.cc application.hh
   tracked-body.cc tracked-body.hh
-  waist-tracker.cc waist-tracker.hh
-  table-tracker.cc table-tracker.hh
+  tracked-body-factory.cc tracked-body-factory.hh
+
+  trackers/waist-tracker.cc trackers/waist-tracker.hh
+  trackers/three-points-tracker.cc trackers/three-points-tracker.hh
+
+  trackers/helmet-tracker.cc trackers/helmet-tracker.hh
+  trackers/cap-tracker.cc trackers/cap-tracker.hh
+  trackers/table-tracker.cc trackers/table-tracker.hh
+
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
@@ -36,3 +44,5 @@ PKG_CONFIG_USE_DEPENDENCY(evart-to-corba dynamic-graph-corba)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba omniORB4)
 
 TARGET_LINK_LIBRARIES(evart-to-corba ${Boost_LIBRARIES})
+
+INSTALL(TARGETS evart-to-corba DESTINATION bin)

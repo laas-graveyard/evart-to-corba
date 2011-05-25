@@ -18,15 +18,29 @@
 #include <stdexcept>
 #include <utility>
 
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/date_time/date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+#include <boost/numeric/conversion/converter.hpp>
 #include <boost/numeric/ublas/io.hpp>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/uniform_real.hpp>
+#include <boost/random/variate_generator.hpp>
+
 
 // uBlas extension
 #include "storage_adaptors.hpp"
 
+extern "C"
+{
 #include <evart-client.h>
+}
 
 #include "corba-signal.hh"
 
@@ -40,12 +54,15 @@ namespace ublas = boost::numeric::ublas;
 typedef ublas::vector<double> vector_t;
 typedef ublas::matrix<double> matrix_t;
 
-static const double TABLE_WIDTH = 0.3;
-static const double TABLE_LENGTH = 0.3;
-static const double TABLE_HEIGHT = 0.25;
+namespace table
+{
+  boost::mt19937 gen;
+} // end of namespace table
+
+TRACKED_BODY_IMPL (TableTracker, "table");
 
 TableTracker::TableTracker (Application& app)
-  : TrackedBody (app, "tablePosition", 0, 4),
+  : TrackedBody (app, "tablePosition", TableTracker::BODY_NAME, 4),
     front_ (0),
     leftUp_ (1),
     rightUp_ (2)
@@ -82,9 +99,47 @@ TableTracker::computeSignal (const evas_msg_t* msg)
   signalOutput_[1] = originY;
   signalOutput_[2] = theta;
 
-  LOG ()
-    << "-> "
-    << originX << " | "
-    << originY << " | "
-    << theta * 180. / M_PI << " deg" << std::endl;
+  signalTimestampOutput_->length (2);
+  signalTimestampOutput_[0] = msg->body_markers.tv_sec;
+  signalTimestampOutput_[1] = msg->body_markers.tv_usec;
+
+  //  LOG ()
+  //    << "-> "
+  //    << originX << " | "
+  //    << originY << " | "
+  //    << theta * 180. / M_PI << " deg" << std::endl;
+}
+
+void
+TableTracker::simulateSignal ()
+{
+  using namespace boost::gregorian;
+  using namespace boost::posix_time;
+
+  typedef boost::posix_time::ptime ptime_t;
+
+  static const double mean = 0.;
+  static const double standard_deviation = 1.;
+  boost::normal_distribution<> dist (mean, standard_deviation);
+
+  boost::variate_generator<boost::mt19937&,
+    boost::normal_distribution<> >
+    die (table::gen, dist);
+
+  signalOutput_->length (3);
+  for (unsigned i = 0; i < 3; ++i)
+    signalOutput_[i] =  die ();
+
+  signalTimestampOutput_->length (2);
+
+  ptime_t time =
+    boost::posix_time::microsec_clock::universal_time ();
+  int64_t sec = time.time_of_day ().total_seconds();
+  int64_t usec =
+    time.time_of_day ().total_microseconds () - sec * 1000000;
+
+  typedef boost::numeric::converter<double, int64_t> Int64_t2Double;
+
+  signalTimestampOutput_[0] = Int64_t2Double::convert (sec);
+  signalTimestampOutput_[1] = Int64_t2Double::convert (usec);
 }

@@ -23,7 +23,10 @@
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 
+extern "C"
+{
 #include <evart-client.h>
+}
 
 #include "corba-connection.hh"
 #include "corba-signal.hh"
@@ -32,6 +35,8 @@
 #include "debug.hh"
 
 #include "application.hh"
+
+#include "tracked-body-factory.hh"
 
 bool exiting = false;
 
@@ -73,7 +78,8 @@ Application::Application (int argc, char* argv[])
     serverPtr_ (),
     evartHost_ (),
     evartPort_ (),
-    listOnly_ (false)
+    mode_ (MODE_TRACKING),
+    debug_ (false)
 {
   LOG () << "Initialize" << std::endl;
 
@@ -87,15 +93,25 @@ Application::Application (int argc, char* argv[])
      po::value<std::string>()->default_value (""),
      "dynamic-graph service kind")
 
-    ("evart-host,h",
+    ("evart-host",
      po::value<std::string>()->default_value (EVAS_STREAM_HOST),
      "evart stream server hostname")
 
-    ("evart-port,p",
-     po::value<unsigned>()->default_value (EVAS_STREAM_PORT),
+    ("evart-port",
+     po::value<short unsigned>()->default_value (EVAS_STREAM_PORT),
      "evart stream server hostname")
 
-    ("list,l", "list bodies and exit")
+    ("list-bodies,l", "list bodies and exit")
+
+    ("list-trackers,L", "list trackers and exit")
+
+    ("simulation,s", "enable simulation mode")
+
+    ("debug,d", "enable debug mode")
+
+    ("bodies,b",
+     po::value<std::vector<std::string> >()->composing(),
+     "tracked bodies list")
 
     ("help,h", "produce help message")
     ;
@@ -113,50 +129,78 @@ Application::Application (int argc, char* argv[])
       throw PrintUsage (ss.str ());
     }
 
-  listOnly_ = vm.count ("list");
+  if (vm.count ("list-bodies")
+      + vm.count ("list-trackers")
+      + vm.count ("simulation") > 1)
+    throw std::runtime_error ("incompatible options");
+
+  if (vm.count ("list-bodies"))
+    mode_ = MODE_BODY_LIST;
+  else if (vm.count ("list-trackers"))
+    mode_ = MODE_TRACKERS_LIST;
+  else if (vm.count ("simulation"))
+    mode_ = MODE_TRACKING_SIMULATION;
+
+  debug_ = vm.count ("debug") != 0;
 
   std::string dgServiceName = vm["dg-service-name"].as<std::string> ();
   std::string dgServiceKind = vm["dg-service-kind"].as<std::string> ();
 
   evartHost_ = vm["evart-host"].as<std::string> ();
-  evartPort_ = vm["evart-port"].as<unsigned> ();
+  evartPort_ = vm["evart-port"].as<short unsigned> ();
 
-  displayCorbaInfo (dgServiceName, dgServiceKind);
-
-  LOG () << "Connecting to CORBA server..." << std::endl;
-  CORBA::Object_ptr corba_obj =
-    corba_.connectToServant (dgServiceName, dgServiceKind);
-  LOG () << "Connected to CORBA server." << std::endl;
-
-  try
-    {
-      serverPtr_ = dynamicGraph::CorbaSignal::_narrow (corba_obj);
-
-      if (CORBA::is_nil (serverPtr_))
-	throw std::runtime_error ("failed to connect to the server.");
-    }
-  catch (CORBA::TRANSIENT& exception)
-    {
-      std::cerr << "Failed to connect to dynamic-graph." << std::endl
-		<< "1. Double check that the server is started." << std::endl
-		<< "2. Does the server and client version match?" << std::endl
-		<< std::endl
-		<< "Minor code: " << exception.minor () << std::endl;
-      throw;
-    }
   setupSignalHandler ();
+  connectToMotionCapture ();
+
+  // Only start CORBA during tracking.
+  if (mode_ == MODE_TRACKING || mode_ == MODE_TRACKING_SIMULATION)
+    {
+      displayCorbaInfo (dgServiceName, dgServiceKind);
+
+      LOG () << "Connecting to CORBA server..." << std::endl;
+      CORBA::Object_ptr corba_obj =
+	corba_.connectToServant (dgServiceName, dgServiceKind);
+      LOG () << "Connected to CORBA server." << std::endl;
+
+      try
+	{
+	  serverPtr_ = dynamicGraph::CorbaSignal::_narrow (corba_obj);
+
+	  if (CORBA::is_nil (serverPtr_))
+	    throw std::runtime_error ("failed to connect to the server.");
+	}
+      catch (CORBA::TRANSIENT& exception)
+	{
+	  std::cerr
+	    << "Failed to connect to dynamic-graph." << std::endl
+	    << "1. Double check that the server is started." << std::endl
+	    << "2. Does the server and client version match?" << std::endl
+	    << std::endl
+	    << "Minor code: " << exception.minor () << std::endl;
+	  throw;
+	}
+
+      if (vm.count ("bodies"))
+	initializeTrackedBodies
+	  (vm["bodies"].as<std::vector<std::string> > ());
+      else
+	{
+	  std::cerr << "nothing to track, exiting." << std::endl;
+	  exiting = true;
+	}
+    }
 }
 
 void
 Application::connectToMotionCapture ()
 {
+  if (mode () != MODE_TRACKING)
+    return;
+
   LOG () << "Connect to motion capture" << std::endl;
 
   evas_setport (evartPort_);
   evas_sethost (evartHost_.c_str ());
-
-  if (evas_acquire (EVAS_ON))
-    throw std::runtime_error ("failed to initialize");
 
   const evas_body_list_t* bodyList = evas_body_list ();
   if (!bodyList)
@@ -191,8 +235,8 @@ Application::listBodies ()
 	% bodyMarkers->index
 	% bodyMarkers->nmarkers;
       std::cout << fmt.str () << std::endl;
-      for (unsigned j = 0; j < bodyMarkers->nmarkers; ++j)
-	{ 
+      for (int j = 0; j < bodyMarkers->nmarkers; ++j)
+	{
 	  fmtMarker % bodyMarkers->markers[j];
 	  std::cout << fmtMarker.str () << std::endl;
 	}
@@ -200,47 +244,108 @@ Application::listBodies ()
 }
 
 void
+Application::initializeTrackedBodies (const std::vector<std::string>& trackers)
+{
+  BOOST_FOREACH(const std::string& str, trackers)
+    {
+      try
+	{
+	  boost::shared_ptr<TrackedBody> ptr = trackedBodyFactory (str, *this);
+	  addTrackedBody (ptr);
+	  boost::format fmt ("tracker %1% initialized");
+	  fmt % str;
+	  std::cout << fmt.str () << std::endl;
+	}
+      catch (std::runtime_error& e)
+	{
+	  boost::format fmt ("failed to initialize tracker %1%");
+	  fmt % str;
+	  std::cerr << fmt.str () << std::endl;
+	}
+    }
+
+  if (trackedBodies_.empty ())
+    {
+      std::cerr << "no running trackers, exiting..." << std::endl;
+      exiting = true;
+    }
+}
+
+void
+Application::listTrackers ()
+{
+  ::listTrackers ();
+}
+
+void
 Application::process ()
 {
-  std::cout << "Start processing" << std::endl;
+  LOG () << "Start processing" << std::endl;
 
-  if (listOnly_)
+  if (mode () == MODE_BODY_LIST)
     listBodies ();
+  else if (mode () == MODE_TRACKERS_LIST)
+    listTrackers ();
+  else if (mode () == MODE_TRACKING_SIMULATION)
+    {
+      std::cout << "Start simulation" << std::endl;
+      while (!exiting)
+	{
+	  BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
+	    {
+	      e->simulateSignal ();
+	      e->writeSignal ();
+	    }
+	}
+    }
   else
-    while (!exiting)
-      {
-#ifdef BROKEN
-	// Unpoll as many messages as possible to avoid receiving
-	// obsolete message kept in the buffer.
-	evas_msg_t msg;
-	evas_sethandler (0, 0);
-	while (evas_recv (&msg, 1e-1))
-	  {}
-#endif
-	evas_sethandler (::handler, this);
-	evas_listen ();
-	sleep (1);
-      }
+    {
+      // Unpoll as many messages as possible to avoid receiving
+      // obsolete message kept in the buffer.
+      if (!exiting)
+	{
+	  evas_msg_t msg;
+	  evas_sethandler (0, 0);
+	  while (evas_recv (&msg, 0.001))
+	    {}
+	}
+
+      std::cout << "Start processing" << std::endl;
+      while (!exiting)
+	{
+	  evas_sethandler (::handler, this);
+	  evas_listen ();
+	  sleep (1);
+	}
+    }
 }
 
 Application::~Application ()
 {
   LOG () << "Destruct" << std::endl;
-  if (evas_acquire (EVAS_OFF))
-    std::cerr << "failed to stop" << std::endl;
 }
 
 void
 Application::handler (const evas_msg_t* msg)
 {
+  
   if (msg->type == EVAS_BODY_MARKERS)
     {
       BOOST_FOREACH (boost::shared_ptr<TrackedBody> e, trackedBodies_)
 	{
-	  if (e && msg->body_markers.nmarkers == e->nbMarkers ())
+	  if (e && msg->body_markers.index == e->bodyId ())
 	    {
+	      if (msg->body_markers.nmarkers - e->nbMarkers () != 0)
+		{
+		  std::cerr
+		    << "warning: marker count mismatch during processing."
+		    << std::endl;
+		  return;
+		}
+	      
 	      e->computeSignal (msg);
-	      e->writeSignal (msg);
+	      e->logRawData (msg);
+	      e->writeSignal ();
 	      return;
 	    }
 	}

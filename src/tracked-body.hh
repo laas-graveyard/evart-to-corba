@@ -16,8 +16,21 @@
 #ifndef EVART_TO_CORBA_TRACKED_BODY_HH
 # define EVART_TO_CORBA_TRACKED_BODY_HH
 # include <string>
+# include <fstream>
 
 # include "application.hh"
+
+# define TRACKED_BODY_DECL(CLASS)					\
+  public:								\
+  static const std::string BODY_NAME;					\
+  static boost::shared_ptr<TrackedBody> clone (Application& app)	\
+  {									\
+    return boost::shared_ptr<TrackedBody> (new CLASS (app));		\
+  }									\
+  struct e_n_d__w_i_t_h__s_e_m_i_c_o_l_o_n
+
+# define TRACKED_BODY_IMPL(CLASS, BODYNAME)	\
+  const std::string CLASS::BODY_NAME = BODYNAME
 
 class Application;
 
@@ -26,25 +39,46 @@ class TrackedBody
 public:
   TrackedBody (Application& app,
 	       const std::string& signalName,
-	       unsigned bodyId,
+	       const std::string& bodyName,
 	       unsigned nbMarkers);
   ~TrackedBody ();
 
-  void writeSignal (const evas_msg_t* msg);
+  void writeSignal ();
   virtual void computeSignal (const evas_msg_t* msg) = 0;
+  virtual void simulateSignal () = 0;
+
+  void logRawData (const evas_msg_t* msg);
 
   unsigned nbMarkers () const
   {
     return nbMarkers_;
   }
 
+  unsigned bodyId () const
+  {
+    return bodyId_;
+  }
+
+  const std::string& bodyName () const
+  {
+    return bodyName_;
+  }
+
 protected:
+  void logSignal ();
+
   dynamicGraph::DoubleSeq_var signalOutput_;
+  dynamicGraph::DoubleSeq_var signalTimestampOutput_;
 private:
   Application& application_;
+  std::string bodyName_;
   unsigned bodyId_;
   unsigned signalRank_;
+  unsigned signalTimestampRank_;
   unsigned nbMarkers_;
+
+  std::ofstream rawLog_;
+  std::ofstream valueLog_;
 };
 
 #endif //! EVART_TO_CORBA_TRACKED_BODY_HH

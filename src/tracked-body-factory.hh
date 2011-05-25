@@ -13,27 +13,18 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_TABLE_TRACKER_HH
-# define EVART_TO_CORBA_TABLE_TRACKER_HH
+#ifndef EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
+# define EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
+# include <string>
+# include <boost/shared_ptr.hpp>
+
 # include "tracked-body.hh"
 
-# include <boost/numeric/ublas/vector.hpp>
-# include <boost/numeric/ublas/matrix.hpp>
+class Application;
 
-class TableTracker : public TrackedBody
-{
-public:
-  TableTracker (Application& app);
-  ~TableTracker ();
+boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,
+						   Application& app);
 
-  virtual void computeSignal (const evas_msg_t* msg);
-private:
-  /// \name Marker id.
-  /// \{
-  unsigned front_;
-  unsigned leftUp_;
-  unsigned rightUp_;
-  /// \}
-};
+void listTrackers ();
 
-#endif //! EVART_TO_CORBA_TABLE_TRACKER_HH
+#endif //! EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
