@@ -13,18 +13,25 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
-# define EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
-# include <string>
-# include <boost/shared_ptr.hpp>
+#ifndef EVART_TO_CORBA_SEGMENT_WAIST_TRACKER_HH
+# define EVART_TO_CORBA_SEGMENT_WAIST_TRACKER_HH
+# include "tracked-segment.hh"
 
-# include "tracked-body.hh"
+# include <boost/make_shared.hpp>
 
-class Application;
+# include <boost/numeric/ublas/vector.hpp>
+# include <boost/numeric/ublas/matrix.hpp>
 
-boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,
-						   Application& app);
 
-void listMarkerTrackers ();
+class WaistTrackerSegment : public TrackedSegment
+{
+  TRACKED_SEGMENT_DECL (WaistTrackerSegment);
+public:
+  WaistTrackerSegment (Application& app);
+  ~WaistTrackerSegment ();
 
-#endif //! EVART_TO_CORBA_TRACKED_BODY_FACTORY_HH
+  virtual void computeSignal (const evas_msg_t* msg);
+  virtual void simulateSignal ();
+};
+
+#endif //! EVART_TO_CORBA_SEGMENT_WAIST_TRACKER_HH

@@ -31,39 +31,45 @@
 
 #include "application.hh"
 
-
 static std::string
 makeFilename (const std::string& type, const std::string& name)
 {
-  return (boost::format ("/tmp/evart-to-corba-%1%-%2%.dat")
+  return (boost::format ("/tmp/evart-to-corba-segment-%1%-%2%.dat")
 	  % type % name).str ();
 }
 
-TrackedBody::TrackedBody (Application& app,
-			  const std::string& signalName,
-			  const std::string& bodyName,
-			  unsigned nbMarkers)
+TrackedSegment::TrackedSegment (Application& app,
+				const std::string& signalName,
+				const std::string& bodyName,
+				const std::string& segmentName,
+				unsigned nbMarkers,
+				unsigned nbSegments)
   : signalOutput_ (new dynamicGraph::DoubleSeq),
     signalTimestampOutput_ (new dynamicGraph::DoubleSeq),
     application_ (app),
-    bodyName_ (bodyName),
+    segmentName_ (segmentName),
     bodyId_ (
 	     (application_.mode () == MODE_TRACKING)
 	     ? getBodyIdFromName (bodyName)
 	     : -1),
+    segmentId_ (
+	     (application_.mode () == MODE_TRACKING)
+	     ? getSegmentIdFromName (bodyId_, segmentName)
+	     : -1),
     signalRank_ (-1),
     signalTimestampRank_ (-1),
     nbMarkers_ (nbMarkers),
-    rawLog_ (makeFilename ("raw", bodyName_).c_str ()),
-    valueLog_ (makeFilename ("value", bodyName_).c_str ())
+    nbSegments_ (nbSegments),
+    rawLog_ (makeFilename ("raw", segmentName_).c_str ()),
+    valueLog_ (makeFilename ("value", segmentName_).c_str ())
 {
   if (application_.debug ())
     {
       rawLog_
-	<< "# bodyId | sec | usec | markerId | x | y | z"
+	<< "# bodyId | segmentId | sec | usec | x | y | z | rx | ry | rz | l"
 	<< std::endl;
       valueLog_
-	<< "# bodyId | sec | usec | signalValue0 ... signalValueN"
+	<< "# bodyId | segmentId | sec | usec | signalValue0 ... signalValueN"
 	<< std::endl;
     }
 
@@ -77,68 +83,86 @@ TrackedBody::TrackedBody (Application& app,
 
   if (application_.mode () == MODE_TRACKING)
     {
-      // Make sure the body exists and contains the expected number of markers.
+      // Make sure the segment exists and contains the expected number of markers.
       const evas_body_markers_list_t* markersList =
 	evas_body_markers_list (bodyId_);
 
       if (!markersList)
 	throw std::runtime_error ("failed to retrieve markers list");
 
+      const evas_body_segments_list_t* segmentsList =
+	evas_body_segments_list (bodyId_);
+
+      if (!segmentsList)
+	throw std::runtime_error ("failed to retrieve segments list");
+
       LOG () << "Number of markers: " << markersList->nmarkers << std::endl;
       if (markersList->nmarkers - nbMarkers != 0)
 	{
-	  boost::format fmt ("bad number of markers in body %1% (id = %2%)");
-	  fmt % bodyName_ % bodyId_;
+	  boost::format fmt
+	    ("bad number of markers in segment %1%::%2% (id = %3%::%4%)");
+	  fmt % bodyName_ % segmentName_ % bodyId_ % segmentId_;
 	  throw std::runtime_error (fmt.str ());
 	}
 
-      LOG () << "Enabling tracking for body id " << bodyId_ << std::endl;
-      if (evas_body_markers (bodyId_, EVAS_ON))
+      LOG () << "Number of segments: " << segmentsList->nsegments << std::endl;
+      if (segmentsList->nsegments - nbSegments != 0)
 	{
-	  boost::format fmt ("failed to enable tracking of body %1% (id = %2%)");
-	  fmt % bodyName_ % bodyId_;
+	  boost::format fmt
+	    ("bad number of segments in segment %1%::%2% (id = %3%::%4%)");
+	  fmt % bodyName_ % segmentName_ % bodyId_ % segmentId_;
+	  throw std::runtime_error (fmt.str ());
+	}
+
+
+      LOG () << "Enabling tracking for segment id " << segmentId_ << std::endl;
+      if (evas_body_segments (bodyId_, EVAS_ON))
+	{
+	  boost::format fmt ("failed to enable tracking of segment %1% (id = %2%)");
+	  fmt % segmentName_ % segmentId_;
 	  throw std::runtime_error (fmt.str ());
 	}
     }
 }
 
-TrackedBody::~TrackedBody ()
+TrackedSegment::~TrackedSegment ()
 {
   if (application_.mode () == MODE_TRACKING)
-    if (evas_body_markers (bodyId_, EVAS_OFF))
-      std::cerr << "failed to disable body tracking" << std::endl;
+    if (evas_body_segments (bodyId_, EVAS_OFF))
+      std::cerr << "failed to disable segment tracking" << std::endl;
 }
 
 void
-TrackedBody::logRawData (const evas_msg_t* msg)
+TrackedSegment::logRawData (const evas_msg_t* msg)
 {
   if (!application_.debug ())
     return;
 
-  for (unsigned i = 0; i < msg->body_markers.nmarkers; ++i)
+  for (unsigned i = 0; i < msg->body_segments.nsegments; ++i)
     {
-      boost::format fmt ("%i %i %i %i %d %d %d");
+      boost::format fmt ("%i %i %i %i %i %d %d %d");
 
       fmt % msg->body_markers.iFrame;
       fmt % msg->body_markers.index;
+      fmt % i;
       fmt % msg->body_markers.tv_sec;
       fmt % msg->body_markers.tv_usec;
 
-      for (unsigned j = 0; j < 3; ++j)
-	fmt % msg->body_markers.markers[i][j];
+      for (unsigned j = 0; j < 7; ++j)
+	fmt % msg->body_segments.segments[i].pos[j];
       rawLog_ << fmt.str () << std::endl;
     }
 }
 
 void
-TrackedBody::logSignal ()
+TrackedSegment::logSignal ()
 {
   if (!application_.debug ())
     return;
 
   typedef boost::numeric::converter<int64_t, double> Double2Int64_t;
 
-  valueLog_ << bodyId_ << " ";
+  valueLog_ << segmentId_ << " ";
   for (unsigned i = 0; i < signalTimestampOutput_->length (); ++i)
     valueLog_
       << Double2Int64_t::convert (signalTimestampOutput_[i])
@@ -150,7 +174,7 @@ TrackedBody::logSignal ()
 
 
 void
-TrackedBody::writeSignal ()
+TrackedSegment::writeSignal ()
 {
   logSignal ();
   application_.getServerPointer ()->writeOutputVectorSignal

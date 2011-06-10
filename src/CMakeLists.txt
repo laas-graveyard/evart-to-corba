@@ -28,19 +28,28 @@ ADD_EXECUTABLE(evart-to-corba
   tracked-body.cc tracked-body.hh
   tracked-body-factory.cc tracked-body-factory.hh
 
+  tracked-segment.cc tracked-segment.hh
+  tracked-segment-factory.cc tracked-segment-factory.hh
+
   trackers/waist-tracker.cc trackers/waist-tracker.hh
   trackers/three-points-tracker.cc trackers/three-points-tracker.hh
 
   trackers/helmet-tracker.cc trackers/helmet-tracker.hh
+
+
   trackers/cap-tracker.cc trackers/cap-tracker.hh
   trackers/table-tracker.cc trackers/table-tracker.hh
   trackers/chair-tracker.cc trackers/chair-tracker.hh
   trackers/bar-tracker.cc trackers/bar-tracker.hh
 
+  segment-trackers/segment-waist-tracker.cc
+  segment-trackers/segment-waist-tracker.hh
+
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
 
+PKG_CONFIG_USE_DEPENDENCY(evart-to-corba jrl-mathtools)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba evart-client)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba dynamic-graph-corba)
 PKG_CONFIG_USE_DEPENDENCY(evart-to-corba omniORB4)

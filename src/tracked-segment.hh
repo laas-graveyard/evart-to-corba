@@ -13,35 +13,39 @@
 // received a copy of the GNU Lesser General Public License along with
 // evart-to-corba. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EVART_TO_CORBA_TRACKED_BODY_HH
-# define EVART_TO_CORBA_TRACKED_BODY_HH
+#ifndef EVART_TO_CORBA_TRACKED_SEGMENT_HH
+# define EVART_TO_CORBA_TRACKED_SEGMENT_HH
 # include <string>
 # include <fstream>
 
 # include "application.hh"
 
-# define TRACKED_BODY_DECL(CLASS)					\
+# define TRACKED_SEGMENT_DECL(CLASS)					\
   public:								\
   static const std::string BODY_NAME;					\
-  static boost::shared_ptr<TrackedBody> clone (Application& app)	\
+  static const std::string SEGMENT_NAME;				\
+  static boost::shared_ptr<TrackedSegment> clone (Application& app)	\
   {									\
-    return boost::shared_ptr<TrackedBody> (new CLASS (app));		\
+    return boost::shared_ptr<TrackedSegment> (new CLASS (app));		\
   }									\
   struct e_n_d__w_i_t_h__s_e_m_i_c_o_l_o_n
 
-# define TRACKED_BODY_IMPL(CLASS, BODYNAME)	\
-  const std::string CLASS::BODY_NAME = BODYNAME
+# define TRACKED_SEGMENT_IMPL(CLASS, BODYNAME, SEGMENTNAME)	\
+  const std::string CLASS::BODY_NAME = BODYNAME;		\
+  const std::string CLASS::SEGMENT_NAME = SEGMENTNAME
 
 class Application;
 
-class TrackedBody
+class TrackedSegment
 {
 public:
-  TrackedBody (Application& app,
-	       const std::string& signalName,
-	       const std::string& bodyName,
-	       unsigned nbMarkers);
-  ~TrackedBody ();
+  TrackedSegment (Application& app,
+		  const std::string& signalName,
+		  const std::string& bodyName,
+		  const std::string& segmentName,
+		  unsigned nbMarkers,
+		  unsigned nbSegments);
+  ~TrackedSegment ();
 
   void writeSignal ();
   virtual void computeSignal (const evas_msg_t* msg) = 0;
@@ -59,6 +63,11 @@ public:
     return bodyId_;
   }
 
+  unsigned segmentId () const
+  {
+    return segmentId_;
+  }
+
 protected:
   void logSignal ();
 
@@ -67,13 +76,16 @@ protected:
 private:
   Application& application_;
   std::string bodyName_;
+  std::string segmentName_;
   unsigned bodyId_;
+  unsigned segmentId_;
   unsigned signalRank_;
   unsigned signalTimestampRank_;
   unsigned nbMarkers_;
+  unsigned nbSegments_;
 
   std::ofstream rawLog_;
   std::ofstream valueLog_;
 };
 
-#endif //! EVART_TO_CORBA_TRACKED_BODY_HH
+#endif //! EVART_TO_CORBA_TRACKED_SEGMENT_HH

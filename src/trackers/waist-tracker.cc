@@ -18,10 +18,6 @@
 #include <stdexcept>
 #include <utility>
 
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/date_time/date.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
@@ -32,6 +28,8 @@
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
+
+#include <jrl/mathtools/angle.hh>
 
 
 // uBlas extension
@@ -105,7 +103,7 @@ namespace
   {
     vector_t dm = m1 - m2;
     return atan2 (dm[1] / sqrt (dm[0] * dm[0] + dm[1] * dm[1]),
-                  dm[0] / sqrt (dm[0] * dm[0] + dm[1] * dm[1]));
+		  dm[0] / sqrt (dm[0] * dm[0] + dm[1] * dm[1]));
   }
 
   matrix_t yaw (const double& yaw)
@@ -114,7 +112,7 @@ namespace
     res.clear ();
     for (unsigned i = 0; i < 4; ++i)
       for (unsigned j = 0; j < 4; ++j)
-        res (i, j) = (i == j) ? 1. : 0.;
+ 	res (i, j) = (i == j) ? 1. : 0.;
 
     res (0, 0) = cos (yaw);
     res (0, 1) = -sin (yaw);
@@ -129,7 +127,7 @@ namespace
     res.clear ();
     for (unsigned i = 0; i < 4; ++i)
       for (unsigned j = 0; j < 4; ++j)
-        res (i, j) = (i == j) ? 1. : 0.;
+ 	res (i, j) = (i == j) ? 1. : 0.;
 
     res (0, 3) = x;
     res (1, 3) = y;
@@ -186,38 +184,33 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   for (unsigned i = 0; i < 3; ++i)
     {
       if (leftUp[i] == EVAS_EMPTY
-          || frontUp[i] == EVAS_EMPTY)
-        abort = true;
+	  || frontUp[i] == EVAS_EMPTY)
+	abort = true;
 
       if (leftUp[i] == EVAS_EMPTY
-          || leftBack[i] == EVAS_EMPTY)
-        abortLeft = true;
+	  || leftBack[i] == EVAS_EMPTY)
+	abortLeft = true;
 
       if (rightUp[i] == EVAS_EMPTY
-          || rightBack[i] == EVAS_EMPTY)
-        abortRight = true;
+	  || rightBack[i] == EVAS_EMPTY)
+	abortRight = true;
+
+      // if (std::fabs (leftUp[i]) >= 100. * 10.
+      // 	  || std::fabs (frontUp[i]) >= 100. * 10.
+      // 	  || std::fabs (leftBack[i]) >= 100. * 10.
+      // 	  || std::fabs (rightBack[i]) >= 100. * 10.)
+      // 	abort = true;
     }
+
   if (abort || (abortLeft && abortRight))
-    return;
-
-  // checkWaistPlaneHorizontal (leftUp, leftBack);
-  // checkWaistPlaneHorizontal (rightUp, rightBack);
-  // checkWaistPlaneHorizontal (frontUp, frontDown);
-
-  // vector_t leftPlane = leftUp - leftBack;
-  // vector_t rightPlane = rightUp - rightBack;
-
-  // LOG () << "leftUp: " << leftUp << std::endl;
-  // LOG () << "leftBack: " << leftBack << std::endl;
-  // LOG () << "rightUp: " << rightUp << std::endl;
-  // LOG () << "rightBack: " << rightBack << std::endl;
-  // LOG () << "left plane: " << leftPlane << std::endl;
-  // LOG () << "left plane(n): " << leftPlane / sqrt (leftPlane[0] * leftPlane[0] + leftPlane[1] * leftPlane[1]) << std::endl;
-  // LOG () << "right plane: " << rightPlane << std::endl;
+    {
+      std::cerr << "abort" << std::endl;
+      return;
+    }
 
   // Merge two computed thetas.
-  double theta1 = 0.;
-  double theta2 = 0.;
+  jrlMathTools::Angle theta1 (0.);
+  jrlMathTools::Angle theta2 (0.);
 
   if (!abortLeft)
     theta1 = computeTheta (leftUp, leftBack);
@@ -231,7 +224,8 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
 
   if (theta1 != theta1 || theta2 != theta2)
     return;
-  double theta = (theta1 + theta2) / 2.;
+
+  jrlMathTools::Angle theta = theta1 + .5 * (theta2 - theta1);
 
   double originX = computeOriginX (theta, leftUp);
   double originY = computeOriginY (theta, frontUp);
@@ -239,19 +233,11 @@ WaistTracker::computeSignal (const evas_msg_t* msg)
   signalOutput_->length (3);
   signalOutput_[0] = originX;
   signalOutput_[1] = originY;
-  signalOutput_[2] = theta;
+  signalOutput_[2] = theta.value ();
 
   signalTimestampOutput_->length (2);
   signalTimestampOutput_[0] = msg->body_markers.tv_sec;
   signalTimestampOutput_[1] = msg->body_markers.tv_usec;
-
-  // LOG ()
-  //   << msg->body_markers.tv_sec << " / "
-  //   << msg->body_markers.tv_usec
-  //   << "-> "
-  //   << originX << " | "
-  //   << originY << " | "
-  //   << theta * 180. / M_PI << " deg" << std::endl;
 }
 
 void
@@ -277,11 +263,8 @@ WaistTracker::simulateSignal ()
 
   ptime_t time =
     boost::posix_time::microsec_clock::universal_time ();
-  int64_t sec = time.time_of_day ().total_seconds();
-  int64_t usec = time.time_of_day ().total_microseconds () - sec * 1000000;
-
+  std::vector<int64_t> time_ = to_timeval (time);
   typedef boost::numeric::converter<double, int64_t> Int64_t2Double;
-
-  signalTimestampOutput_[0] = Int64_t2Double::convert (sec);
-  signalTimestampOutput_[1] = Int64_t2Double::convert (usec);
+  signalTimestampOutput_[0] = Int64_t2Double::convert (time_[0]);
+  signalTimestampOutput_[1] = Int64_t2Double::convert (time_[1]);
 }

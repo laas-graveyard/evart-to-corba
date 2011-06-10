@@ -22,6 +22,7 @@
 # include <boost/numeric/ublas/vector.hpp>
 # include <boost/numeric/ublas/matrix.hpp>
 
+
 class WaistTracker : public TrackedBody
 {
   TRACKED_BODY_DECL (WaistTracker);

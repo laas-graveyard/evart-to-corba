@@ -1,0 +1,10 @@
+[RigidBody]
+Name=tiles
+ExtraStretch=0.100000
+PositionOffset= 0.000000e+000,  0.000000e+000,  0.000000e+000
+RotationOrder=ZYX
+OrientationOffset= 0.000000e+000,  0.000000e+000,  0.000000e+000
+NumberOfMarkers=3
+  186.9505,   675.9849,     1.3789,     0.0000, origin , 0
+  186.0884, -1352.6833,    -1.7658,     0.0000, OX , 1
+ -373.0388,   676.6984,     0.3869,     0.0000, OY , 2
