@@ -47,52 +47,58 @@ extern "C"
 #define ENABLE_DEBUG
 #include "debug.hh"
 
-#include "table-tracker.hh"
+#include "chair-tracker.hh"
 
 namespace ublas = boost::numeric::ublas;
 
 typedef ublas::vector<double> vector_t;
 typedef ublas::matrix<double> matrix_t;
 
-namespace table
+namespace chair
 {
   boost::mt19937 gen;
-} // end of namespace table
+} // end of namespace chair
 
-TRACKED_BODY_IMPL (TableTracker, "table");
+TRACKED_BODY_IMPL (ChairTracker, "chair");
 
-TableTracker::TableTracker (Application& app)
-  : TrackedBody (app, "tablePosition", TableTracker::BODY_NAME, 4),
-    front_ (0),
-    leftUp_ (1),
-    rightUp_ (2)
+ChairTracker::ChairTracker (Application& app)
+  : TrackedBody (app, "chairPosition", ChairTracker::BODY_NAME, 5)
 {}
 
-TableTracker::~TableTracker ()
+ChairTracker::~ChairTracker ()
 {}
 
 void
-TableTracker::computeSignal (const evas_msg_t* msg)
+ChairTracker::computeSignal (const evas_msg_t* msg)
 {
 /**
-       ----o  BR      x <---------------o
-      |    |                            |
-      |    |                           \|/
-      |    |                            y
-   FL o----o  BL
+   BR o---------o TR       x <-------------o
+      |      |  |                          |
+      |  BM o|  |                         \|/
+      |      |  |                          y
+   BL o---------o TL
 **/
 
-  vector_t backL  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
-  vector_t backR  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
-  vector_t frontL = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
+  vector_t topL     = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
+  vector_t topR     = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
+  vector_t bottomL  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
+  vector_t bottomM  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[3]);
+  vector_t bottomR  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[4]);
 
 
+  double front_middle_x = (bottomL[0] + bottomR[0])/2.0;
+  double front_middle_y = (bottomL[1] + bottomR[1])/2.0;
 
-  double originX = 0.001*(frontL[0] + backR[0])/2.0;
-  double originY = 0.001*(frontL[1] + backR[1])/2.0;
-  double theta;
-  if( fabs(frontL[0] - backL[0]) != 0.0 ) theta = atan( (frontL[1] - backL[1]) / (frontL[0] - backL[0]));
+  double originX = 0.001*(0.8*front_middle_x + 1.2*bottomM[0])/2.0;
+  double originY = 0.001*(front_middle_y + bottomM[1])/2.0;
+  double theta1, theta2, theta;
+  //if( fabs(bottomL[0] - bottomR[0]) != 0.0 ) theta1 = atan2( (bottomL[1] - bottomR[1]) , (bottomL[0] - bottomR[0]));
+  //else theta1 = M_PI / 2.0;
+
+  if( fabs(topR[0] - topL[0]) != 0.0 ) theta = atan2( (topR[1] - topL[1]) , (topR[0] - topL[0]));
   else theta = M_PI / 2.0;
+
+  //theta = (theta1 + theta2)/2.0;
 
   signalOutput_->length (3);
   signalOutput_[0] = originX;
@@ -111,7 +117,7 @@ TableTracker::computeSignal (const evas_msg_t* msg)
 }
 
 void
-TableTracker::simulateSignal ()
+ChairTracker::simulateSignal ()
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
@@ -124,7 +130,7 @@ TableTracker::simulateSignal ()
 
   boost::variate_generator<boost::mt19937&,
     boost::normal_distribution<> >
-    die (table::gen, dist);
+    die (chair::gen, dist);
 
   signalOutput_->length (3);
   for (unsigned i = 0; i < 3; ++i)

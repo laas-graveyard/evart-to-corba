@@ -28,6 +28,8 @@
 #include "trackers/helmet-tracker.hh"
 #include "trackers/cap-tracker.hh"
 #include "trackers/table-tracker.hh"
+#include "trackers/chair-tracker.hh"
+#include "trackers/bar-tracker.hh"
 
 class Application;
 
@@ -46,6 +48,8 @@ void initializeTrackerRegister ()
   REGISTER_TRACKER (TableTracker);
   REGISTER_TRACKER (ThreePointsTracker);
   REGISTER_TRACKER (WaistTracker);
+  REGISTER_TRACKER (ChairTracker);
+  REGISTER_TRACKER (BarTracker);
 }
 
 boost::shared_ptr<TrackedBody> trackedBodyFactory (const std::string& name,

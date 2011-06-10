@@ -34,6 +34,8 @@ ADD_EXECUTABLE(evart-to-corba
   trackers/helmet-tracker.cc trackers/helmet-tracker.hh
   trackers/cap-tracker.cc trackers/cap-tracker.hh
   trackers/table-tracker.cc trackers/table-tracker.hh
+  trackers/chair-tracker.cc trackers/chair-tracker.hh
+  trackers/bar-tracker.cc trackers/bar-tracker.hh
 
   evart-to-corba.cc
   ${ALL_IDL_STUBS}

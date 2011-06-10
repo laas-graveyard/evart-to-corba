@@ -47,52 +47,92 @@ extern "C"
 #define ENABLE_DEBUG
 #include "debug.hh"
 
-#include "table-tracker.hh"
+#include "bar-tracker.hh"
 
 namespace ublas = boost::numeric::ublas;
 
 typedef ublas::vector<double> vector_t;
 typedef ublas::matrix<double> matrix_t;
 
-namespace table
+namespace bar
 {
   boost::mt19937 gen;
-} // end of namespace table
+} // end of namespace bar
 
-TRACKED_BODY_IMPL (TableTracker, "table");
+TRACKED_BODY_IMPL (BarTracker, "bar");
 
-TableTracker::TableTracker (Application& app)
-  : TrackedBody (app, "tablePosition", TableTracker::BODY_NAME, 4),
-    front_ (0),
-    leftUp_ (1),
-    rightUp_ (2)
+BarTracker::BarTracker (Application& app)
+  : TrackedBody (app, "barPosition", BarTracker::BODY_NAME, 5)
 {}
 
-TableTracker::~TableTracker ()
+BarTracker::~BarTracker ()
 {}
 
 void
-TableTracker::computeSignal (const evas_msg_t* msg)
+BarTracker::computeSignal (const evas_msg_t* msg)
 {
 /**
-       ----o  BR      x <---------------o
-      |    |                            |
-      |    |                           \|/
-      |    |                            y
-   FL o----o  BL
+  FL  -o-               -o- FR               x/|\
+      | |---------------| |o MR                |
+  BL  -o-               -o- BR            y<---o
 **/
 
-  vector_t backL  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
-  vector_t backR  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
-  vector_t frontL = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
+  vector_t frontL  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[0]);
+  vector_t backL   = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[1]);
+  vector_t frontR  = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[2]);
+  vector_t middleR = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[3]);
+  vector_t backR   = ublas::make_vector_from_pointer    (3, msg->body_markers.markers[4]);
 
 
+  bool abortBackL = false;
+  bool abortBackR = false;
+  bool abortFrontL = false;
+  bool abortFrontR = false;
 
-  double originX = 0.001*(frontL[0] + backR[0])/2.0;
-  double originY = 0.001*(frontL[1] + backR[1])/2.0;
-  double theta;
-  if( fabs(frontL[0] - backL[0]) != 0.0 ) theta = atan( (frontL[1] - backL[1]) / (frontL[0] - backL[0]));
+  for(int i=0;i<2;i++)
+  {
+      if(backL[i] == EVAS_EMPTY) abortBackL = true;
+      if(backR[i] == EVAS_EMPTY) abortBackR = true;
+      if(frontL[i] == EVAS_EMPTY) abortFrontL = true;
+      if(frontR[i] == EVAS_EMPTY) abortFrontR = true;
+  }
+
+  bool abortBack = abortBackL || abortBackR;
+  bool abortFront = abortFrontL || abortFrontR;
+
+  double originX_b = 0.001*(backL[0] + backR[0])/2.0;
+  double originY_b = 0.001*(backL[1] + backR[1])/2.0;
+
+  double originX_f = 0.001*(frontL[0] + frontR[0])/2.0;
+  double originY_f = 0.001*(frontL[1] + frontR[1])/2.0;
+
+  double originX = EVAS_EMPTY;
+  double originY = EVAS_EMPTY;
+  double theta = 0.0;
+
+
+  if( fabs(frontL[0] - backL[0]) != 0.0 ) theta = atan2( (frontL[1] - backL[1]) , (frontL[0] - backL[0]));
   else theta = M_PI / 2.0;
+
+
+  if(!abortBack && !abortFront)
+  {
+      theta = atan2( (frontR[1]+backR[1])/2.0 - (frontL[1]+backL[1])/2.0 , (frontR[0]+backR[0])/2.0 - (frontL[0]+backL[0])/2.0 );
+      originX = (originX_b + originX_f)/2.0;
+      originY = (originY_b + originY_f)/2.0;
+  }
+  if(!abortBack && abortFront)
+  {
+      theta = atan2( backR[1] - backL[1] , backR[0] - backL[0] );
+      originX = originX_b + 0.03 * cos(theta);
+      originY = originY_b + 0.03 * sin(theta);
+  }
+  if(abortBack && !abortFront)
+  {
+      theta = atan2( frontR[1] - frontL[1] , frontR[0] - frontL[0] );
+      originX = originX_f + 0.03 * cos(theta);
+      originY = originY_f + 0.03 * sin(theta);
+  }
 
   signalOutput_->length (3);
   signalOutput_[0] = originX;
@@ -111,7 +151,7 @@ TableTracker::computeSignal (const evas_msg_t* msg)
 }
 
 void
-TableTracker::simulateSignal ()
+BarTracker::simulateSignal ()
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
@@ -124,7 +164,7 @@ TableTracker::simulateSignal ()
 
   boost::variate_generator<boost::mt19937&,
     boost::normal_distribution<> >
-    die (table::gen, dist);
+    die (bar::gen, dist);
 
   signalOutput_->length (3);
   for (unsigned i = 0; i < 3; ++i)
