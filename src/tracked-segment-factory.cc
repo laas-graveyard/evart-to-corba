@@ -25,6 +25,7 @@
 
 // Include all segments
 #include "segment-trackers/segment-waist-tracker.hh"
+#include "segment-trackers/left-foot-tracker.hh"
 
 class Application;
 
@@ -40,6 +41,7 @@ std::map<std::string, cloneFunction_t> trackerRegisterSegment;
 void initializeSegmentTrackerRegister ()
 {
   REGISTER_TRACKER (WaistTrackerSegment);
+  REGISTER_TRACKER (LeftFootTracker);
 }
 
 boost::shared_ptr<TrackedSegment>
