@@ -75,34 +75,35 @@ WaistTrackerSegment::~WaistTrackerSegment ()
 void
 WaistTrackerSegment::computeSignal (const evas_msg_t* msg)
 {
-  vector_t data = ublas::make_vector_from_pointer
-    (7, msg->body_segments.segments[segmentId ()].pos);
+  vector_t pos = ublas::make_vector_from_pointer
+    (3, msg->body_segments.segments[segmentId ()].pos);
+  vector_t rot = ublas::make_vector_from_pointer
+    (3, msg->body_segments.segments[segmentId ()].rot);
 
-  for (unsigned i = 0; i < 7; ++i)
-    if (data[i] == EVAS_EMPTY)
+  for (unsigned i = 0; i < 3; ++i)
+    if (pos[i] == EVAS_EMPTY || rot[i] == EVAS_EMPTY)
       return;
 
 #ifdef EVART_TO_CORBA_FULL_CONFIGURATION
-  signalOutput_->length (7);
-  for (unsigned i = 0; i < 7; ++i)
+  signalOutput_->length (6);
+  for (unsigned i = 0; i < 3; ++i)
     {
-      signalOutput_[i] = data[i];
+      signalOutput_[i] = pos[i];
+      signalOutput_[i+3] = rot[i];
 
       // Convert to SI units.
-      if (i < 3 || i == 6)
-	signalOutput_[i] /= 1000.;
-      else
-	signalOutput_[i] *= M_PI / 180.;
+      signalOutput_[i] /= 1000.;
+      signalOutput_[i+3] *= M_PI / 180.;
     }
 #else
   signalOutput_->length (3);
   for (unsigned i = 0; i < 2; ++i)
     {
-      signalOutput_[i] = data[i];
+      signalOutput_[i] = pos[i];
       signalOutput_[i] /= 1000.;
     }
 
-  signalOutput_[2] = data[5];
+  signalOutput_[2] = rot[2];
   signalOutput_[2] *= M_PI / 180.;
 #endif // EVART_TO_CORBA_FULL_CONFIGURATION
 
