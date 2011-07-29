@@ -44,6 +44,22 @@ ADD_EXECUTABLE(evart-to-corba
 
   segment-trackers/segment-waist-tracker.cc
   segment-trackers/segment-waist-tracker.hh
+  segment-trackers/segment-room-tracker.cc
+  segment-trackers/segment-room-tracker.hh
+  segment-trackers/segment-torus1-tracker.cc
+  segment-trackers/segment-torus1-tracker.hh
+  segment-trackers/segment-torus2-tracker.cc
+  segment-trackers/segment-torus2-tracker.hh
+  segment-trackers/segment-foot-tracker.cc
+  segment-trackers/segment-foot-tracker.hh
+  segment-trackers/segment-bar-tracker.cc
+  segment-trackers/segment-bar-tracker.hh
+  segment-trackers/segment-chair-tracker.cc
+  segment-trackers/segment-chair-tracker.hh
+  segment-trackers/segment-table-tracker.cc
+  segment-trackers/segment-table-tracker.hh
+  segment-trackers/segment-helmet-tracker.cc
+  segment-trackers/segment-helmet-tracker.hh
 
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
