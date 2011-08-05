@@ -1,0 +1,53 @@
+[General Information]
+Version=5
+ProjectName=helmet
+ProjectComments1=
+ProjectComments2=
+ProjectComments3=Written out by Cortex 2.1.0.1103. Please do not hand edit this file.
+[Markers]
+Comment= Marker#, Name, Color, PhysicalColor, Size, Optional
+NumberOf=4
+1, front_left, 0, 0, 0.000000, 0
+2, front_right, 1, 0, 0.000000, 0
+3, top, 2, 0, 0.000000, 0
+4, back, 3, 0, 0.000000, 0
+[VirtualMarkers]
+Comment= Marker#, Name, CalculationType, OriginMarker#, LongAxisMarker#, Segment#
+Comment= PlaneAxisMarker#, XPositionOffset, YPositionOffset, ZPositionOffset
+Comment= Calculation Types : 2 = 2 pt. ratio, 3 = 2 pt. measured value
+Comment= Calculation Types : 4 = 3 pt. ratio, 5 = 3 pt. measured value
+Comment= Calculation Types : 6 = EMR marker, 7 = 1 pt. measured value
+, 8 = Relative to Bone
+NumberOf=2
+5, V_front, 2, 1, 2, 0, 0.000000, 0.500000, 0.000000, -1
+6, V_middle, 2, 4, 5, 0, 0.000000, 0.600000, 0.000000, -1
+[VMJoinDefs]
+Comment= Marker#, CalculationType, OriginMarker#, LongAxisMarker#, PlaneAxisMarker#
+NumberOf=0
+[Linkages]
+Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
+NumberOf=6
+Link, 4, 0, 2 1, 177.247284, 177.799377, 0.150000
+Link, 4, 0, 3 1, 154.558365, 154.858490, 0.150000
+Link, 4, 0, 3 2, 153.699463, 153.934189, 0.150000
+Link, 4, 0, 4 1, 256.043854, 257.685974, 0.150000
+Link, 4, 0, 4 2, 266.898621, 267.578857, 0.150000
+Link, 4, 0, 4 3, 186.109619, 187.270096, 0.150000
+[SkeletonType]
+Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
+SkeletonType=1
+RotationOrder=ZYX
+BoneAxis=Y
+PlaneAxis=X
+[HtrExportOptions]
+BasePositionOption=1
+[Segments]
+Comment= Segment#, Name, Parent, OriginMarker#, LongAxisMarker#
+Comment= PlaneAxisMarker#, XRotationOffset, YRotationOffset, ZRotationOffset
+Comment= Segment 0 represents the Root segment
+NumberOf=1
+1, origin, 0, 6, 5, 2, 0.000000, 0.000000, 0.000000
+[Personal Info]
+Name=Default Name
+Height=0.000000
+Weight=0.000000

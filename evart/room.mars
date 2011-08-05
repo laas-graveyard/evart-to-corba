@@ -1,0 +1,70 @@
+[General Information]
+Version=5
+ProjectName=room
+ProjectComments1=
+ProjectComments2=
+ProjectComments3=Written out by Cortex 2.1.0.1103. Please do not hand edit this file.
+[Markers]
+Comment= Marker#, Name, Color, PhysicalColor, Size, Optional
+NumberOf=6
+1, fll, 0, 0, 0.000000, 0
+2, flm, 1, 0, 0.000000, 0
+3, frm, 2, 0, 0.000000, 0
+4, frr, 3, 0, 0.000000, 0
+5, mr, 5, 0, 0.000000, 0
+6, br, 6, 0, 0.000000, 0
+[VirtualMarkers]
+Comment= Marker#, Name, CalculationType, OriginMarker#, LongAxisMarker#, Segment#
+Comment= PlaneAxisMarker#, XPositionOffset, YPositionOffset, ZPositionOffset
+Comment= Calculation Types : 2 = 2 pt. ratio, 3 = 2 pt. measured value
+Comment= Calculation Types : 4 = 3 pt. ratio, 5 = 3 pt. measured value
+Comment= Calculation Types : 6 = EMR marker, 7 = 1 pt. measured value
+, 8 = Relative to Bone
+NumberOf=0
+[VMJoinDefs]
+Comment= Marker#, CalculationType, OriginMarker#, LongAxisMarker#, PlaneAxisMarker#
+NumberOf=0
+[Linkages]
+Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
+NumberOf=15
+Link, 7, 0, 2 1, 1095.652100, 1096.239136, 0.150000
+Link, 7, 0, 3 1, 2366.820068, 2367.295166, 0.150000
+Link, 7, 0, 3 2, 1270.782227, 1271.481445, 0.150000
+Link, 7, 0, 4 1, 3458.229248, 3458.837891, 0.150000
+Link, 7, 0, 4 2, 2362.253418, 2363.064941, 0.150000
+Link, 7, 0, 4 3, 1091.130859, 1091.884033, 0.150000
+Link, 7, 0, 5 1, 3972.055908, 3972.295654, 0.150000
+Link, 7, 0, 5 2, 2887.640137, 2888.142334, 0.150000
+Link, 7, 0, 5 3, 1646.942993, 1647.328735, 0.150000
+Link, 7, 0, 5 4, 676.146606, 676.745667, 0.150000
+Link, 7, 0, 6 1, 4202.500488, 4203.033203, 0.150000
+Link, 7, 0, 6 2, 3199.948975, 3200.669678, 0.150000
+Link, 7, 0, 6 3, 2148.185791, 2148.895264, 0.150000
+Link, 7, 0, 6 4, 1534.750122, 1535.837769, 0.150000
+Link, 7, 0, 6 5, 985.902832, 986.466125, 0.150000
+[SkeletonType]
+Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
+SkeletonType=1
+RotationOrder=ZYX
+BoneAxis=Y
+PlaneAxis=X
+[HtrExportOptions]
+BasePositionOption=1
+[Segments]
+Comment= Segment#, Name, Parent, OriginMarker#, LongAxisMarker#
+Comment= PlaneAxisMarker#, XRotationOffset, YRotationOffset, ZRotationOffset
+Comment= Segment 0 represents the Root segment
+NumberOf=1
+1, origin, 0, 3, 2, 6, 0.000000, 180.000000, 0.000000
+[ModelPose]
+NumberOf=6
+1, 3029.424805, -2461.564209, 629.484375
+2, 3020.946777, -1365.576050, 628.962646
+3, 3020.095459, -94.684677, 631.867859
+4, 3022.058594, 997.118286, 632.709900
+5, 3492.069580, 1483.546021, 634.635254
+6, 4478.260742, 1483.417480, 635.144043
+[Personal Info]
+Name=Default Name
+Height=0.000000
+Weight=0.000000

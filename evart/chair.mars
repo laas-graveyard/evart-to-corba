@@ -1,0 +1,57 @@
+[General Information]
+Version=5
+ProjectName=chair
+ProjectComments1=
+ProjectComments2=
+ProjectComments3=Written out by Cortex 2.1.0.1103. Please do not hand edit this file.
+[Markers]
+Comment= Marker#, Name, Color, PhysicalColor, Size, Optional
+NumberOf=5
+1, top_left, 0, 0, 0.000000, 0
+2, top_right, 1, 0, 0.000000, 0
+3, middle, 2, 0, 0.000000, 0
+4, bottom_left, 3, 0, 0.000000, 0
+5, bottom_right, 4, 0, 0.000000, 0
+[VirtualMarkers]
+Comment= Marker#, Name, CalculationType, OriginMarker#, LongAxisMarker#, Segment#
+Comment= PlaneAxisMarker#, XPositionOffset, YPositionOffset, ZPositionOffset
+Comment= Calculation Types : 2 = 2 pt. ratio, 3 = 2 pt. measured value
+Comment= Calculation Types : 4 = 3 pt. ratio, 5 = 3 pt. measured value
+Comment= Calculation Types : 6 = EMR marker, 7 = 1 pt. measured value
+, 8 = Relative to Bone
+NumberOf=1
+6, V_mid, 2, 5, 4, 0, 0.000000, 0.500000, 0.000000, -1
+[VMJoinDefs]
+Comment= Marker#, CalculationType, OriginMarker#, LongAxisMarker#, PlaneAxisMarker#
+NumberOf=0
+[Linkages]
+Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
+NumberOf=10
+Link, 5, 0, 2 1, 303.405365, 303.405365, 0.150000
+Link, 5, 0, 3 1, 497.909790, 497.909790, 0.150000
+Link, 5, 0, 3 2, 504.505768, 504.505768, 0.150000
+Link, 5, 0, 4 1, 701.374207, 701.374207, 0.150000
+Link, 5, 0, 4 2, 779.967896, 779.967896, 0.150000
+Link, 5, 0, 4 3, 372.466553, 372.466553, 0.150000
+Link, 5, 0, 5 1, 778.326538, 778.326538, 0.150000
+Link, 5, 0, 5 2, 714.492371, 714.492371, 0.150000
+Link, 5, 0, 5 3, 374.548401, 374.548401, 0.150000
+Link, 5, 0, 5 4, 349.216400, 349.216400, 0.150000
+[SkeletonType]
+Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
+SkeletonType=1
+RotationOrder=ZYX
+BoneAxis=Y
+PlaneAxis=X
+[HtrExportOptions]
+BasePositionOption=1
+[Segments]
+Comment= Segment#, Name, Parent, OriginMarker#, LongAxisMarker#
+Comment= PlaneAxisMarker#, XRotationOffset, YRotationOffset, ZRotationOffset
+Comment= Segment 0 represents the Root segment
+NumberOf=1
+1, origin, 0, 3, 6, 5, 0.000000, 0.000000, 0.000000
+[Personal Info]
+Name=Default Name
+Height=0.000000
+Weight=0.000000

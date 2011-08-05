@@ -1,0 +1,59 @@
+[General Information]
+Version=5
+ProjectName=table
+ProjectComments1=
+ProjectComments2=
+ProjectComments3=Written out by Cortex 2.1.0.1103. Please do not hand edit this file.
+[Markers]
+Comment= Marker#, Name, Color, PhysicalColor, Size, Optional
+NumberOf=4
+1, front_left, 0, 0, 0.000000, 0
+2, back_left, 1, 0, 0.000000, 0
+3, back_right, 2, 0, 0.000000, 0
+4, middle, 3, 0, 0.000000, 0
+[VirtualMarkers]
+Comment= Marker#, Name, CalculationType, OriginMarker#, LongAxisMarker#, Segment#
+Comment= PlaneAxisMarker#, XPositionOffset, YPositionOffset, ZPositionOffset
+Comment= Calculation Types : 2 = 2 pt. ratio, 3 = 2 pt. measured value
+Comment= Calculation Types : 4 = 3 pt. ratio, 5 = 3 pt. measured value
+Comment= Calculation Types : 6 = EMR marker, 7 = 1 pt. measured value
+, 8 = Relative to Bone
+NumberOf=2
+5, V_midDiag, 2, 1, 3, 0, 0.000000, 0.500000, 0.000000, -1
+6, V_midBorder, 2, 1, 2, 0, 0.000000, 0.500000, 0.000000, -1
+[VMJoinDefs]
+Comment= Marker#, CalculationType, OriginMarker#, LongAxisMarker#, PlaneAxisMarker#
+NumberOf=0
+[Linkages]
+Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
+NumberOf=6
+Link, 3, 0, 2 1, 472.758392, 473.965820, 0.150000
+Link, 3, 0, 3 1, 737.207520, 738.322266, 0.150000
+Link, 3, 0, 3 2, 570.223389, 571.034790, 0.150000
+Link, 3, 0, 4 1, 336.170227, 337.695160, 0.150000
+Link, 3, 0, 4 2, 173.704926, 174.742416, 0.150000
+Link, 3, 0, 4 3, 500.235443, 501.195618, 0.150000
+[SkeletonType]
+Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
+SkeletonType=1
+RotationOrder=ZYX
+BoneAxis=Y
+PlaneAxis=X
+[HtrExportOptions]
+BasePositionOption=1
+[Segments]
+Comment= Segment#, Name, Parent, OriginMarker#, LongAxisMarker#
+Comment= PlaneAxisMarker#, XRotationOffset, YRotationOffset, ZRotationOffset
+Comment= Segment 0 represents the Root segment
+NumberOf=1
+1, origin, 0, 5, 6, 1, 0.000000, 0.000000, 0.000000
+[ModelPose]
+NumberOf=4
+1, -36893488147419103000.000000, 14.192092, -36893488147419103000.000000
+2, 0.000000, 0.000000, 0.000000
+3, 0.000000, 0.000000, 0.000000
+4, -2182.867432, -659.444580, 756.342041
+[Personal Info]
+Name=Default Name
+Height=0.000000
+Weight=0.000000
