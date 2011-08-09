@@ -28,12 +28,12 @@ NumberOf=0
 [Linkages]
 Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
 NumberOf=6
-Link, 9, 0, 2 1, 92.015144, 98.393433, 0.150000
-Link, 9, 0, 3 1, 222.452026, 224.941559, 0.150000
-Link, 9, 0, 3 2, 223.511810, 230.108063, 0.150000
-Link, 0, 0, 4 1, 213.445557, 215.804626, 0.150000
-Link, 0, 0, 4 2, 239.064667, 245.375656, 0.150000
-Link, 0, 0, 4 3, 59.195412, 61.344879, 0.150000
+Link, 9, 0, 2 1, 88.534241, 88.925827, 0.150000
+Link, 9, 0, 3 1, 219.508682, 220.350159, 0.150000
+Link, 9, 0, 3 2, 217.431458, 218.603439, 0.150000
+Link, 0, 0, 4 1, 154.742905, 156.017151, 0.150000
+Link, 0, 0, 4 2, 193.330597, 194.438019, 0.150000
+Link, 0, 0, 4 3, 101.771660, 102.559471, 0.150000
 [SkeletonType]
 Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
 SkeletonType=1

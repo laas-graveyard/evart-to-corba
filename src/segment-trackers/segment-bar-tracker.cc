@@ -65,7 +65,7 @@ BarTrackerSegment::BarTrackerSegment (Application& app)
 		    BarTrackerSegment::BODY_NAME,
 		    BarTrackerSegment::BODY_NAME,
 		    BarTrackerSegment::SEGMENT_NAME,
-                    7, 1)
+                    8, 1)
 {}
 
 BarTrackerSegment::~BarTrackerSegment ()

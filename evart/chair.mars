@@ -6,12 +6,13 @@ ProjectComments2=
 ProjectComments3=Written out by Cortex 2.1.0.1103. Please do not hand edit this file.
 [Markers]
 Comment= Marker#, Name, Color, PhysicalColor, Size, Optional
-NumberOf=5
+NumberOf=6
 1, top_left, 0, 0, 0.000000, 0
 2, top_right, 1, 0, 0.000000, 0
 3, middle, 2, 0, 0.000000, 0
 4, bottom_left, 3, 0, 0.000000, 0
 5, bottom_right, 4, 0, 0.000000, 0
+6, middle_right, 8, 0, 0.000000, 0
 [VirtualMarkers]
 Comment= Marker#, Name, CalculationType, OriginMarker#, LongAxisMarker#, Segment#
 Comment= PlaneAxisMarker#, XPositionOffset, YPositionOffset, ZPositionOffset
@@ -20,23 +21,28 @@ Comment= Calculation Types : 4 = 3 pt. ratio, 5 = 3 pt. measured value
 Comment= Calculation Types : 6 = EMR marker, 7 = 1 pt. measured value
 , 8 = Relative to Bone
 NumberOf=1
-6, V_mid, 2, 5, 4, 0, 0.000000, 0.500000, 0.000000, -1
+7, V_mid, 2, 5, 4, 0, 0.000000, 0.500000, 0.000000, -1
 [VMJoinDefs]
 Comment= Marker#, CalculationType, OriginMarker#, LongAxisMarker#, PlaneAxisMarker#
 NumberOf=0
 [Linkages]
 Comment= Name, LinkColor, LinkType, Marker1# Marker2#, MinLength, MaxLength, ExtraStretch
-NumberOf=10
-Link, 5, 0, 2 1, 303.405365, 303.405365, 0.150000
-Link, 5, 0, 3 1, 497.909790, 497.909790, 0.150000
-Link, 5, 0, 3 2, 504.505768, 504.505768, 0.150000
-Link, 5, 0, 4 1, 701.374207, 701.374207, 0.150000
-Link, 5, 0, 4 2, 779.967896, 779.967896, 0.150000
-Link, 5, 0, 4 3, 372.466553, 372.466553, 0.150000
-Link, 5, 0, 5 1, 778.326538, 778.326538, 0.150000
-Link, 5, 0, 5 2, 714.492371, 714.492371, 0.150000
-Link, 5, 0, 5 3, 374.548401, 374.548401, 0.150000
-Link, 5, 0, 5 4, 349.216400, 349.216400, 0.150000
+NumberOf=15
+Link, 5, 0, 2 1, 305.226135, 305.818878, 0.150000
+Link, 5, 0, 3 1, 497.465240, 498.063293, 0.150000
+Link, 5, 0, 3 2, 502.067291, 502.264984, 0.150000
+Link, 5, 0, 4 1, 695.576050, 695.909790, 0.150000
+Link, 5, 0, 4 2, 774.494507, 774.593689, 0.150000
+Link, 5, 0, 4 3, 371.851196, 372.339447, 0.150000
+Link, 5, 0, 5 1, 775.109802, 775.517029, 0.150000
+Link, 5, 0, 5 2, 710.026794, 710.212097, 0.150000
+Link, 5, 0, 5 3, 375.591187, 375.882385, 0.150000
+Link, 5, 0, 5 4, 348.250580, 348.840576, 0.150000
+Link, 9, 0, 6 1, 690.639038, 691.137512, 0.150000
+Link, 9, 0, 6 2, 597.913757, 598.179871, 0.150000
+Link, 9, 0, 6 3, 283.074982, 283.631958, 0.150000
+Link, 9, 0, 6 4, 405.476593, 406.145020, 0.150000
+Link, 9, 0, 6 5, 144.696381, 145.029465, 0.150000
 [SkeletonType]
 Comment= Type: 0=None, 1=SkeletonBuilder, 2=Embedded Calcium Model, 3=Assoc. JNT file
 SkeletonType=1
@@ -50,7 +56,15 @@ Comment= Segment#, Name, Parent, OriginMarker#, LongAxisMarker#
 Comment= PlaneAxisMarker#, XRotationOffset, YRotationOffset, ZRotationOffset
 Comment= Segment 0 represents the Root segment
 NumberOf=1
-1, origin, 0, 3, 6, 5, 0.000000, 0.000000, 0.000000
+1, origin, 0, 3, 7, 5, 0.000000, 0.000000, 0.000000
+[ModelPose]
+NumberOf=6
+1, 668.005798, -841.649780, 851.243347
+2, 940.477600, -703.608826, 861.823486
+3, 715.418274, -580.691528, 430.051483
+4, 407.044373, -374.007935, 407.206970
+5, 711.995117, -205.417130, 410.249969
+6, 807.633423, -312.685364, 429.130646
 [Personal Info]
 Name=Default Name
 Height=0.000000

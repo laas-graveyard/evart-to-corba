@@ -65,7 +65,7 @@ ChairTrackerSegment::ChairTrackerSegment (Application& app)
 		    ChairTrackerSegment::BODY_NAME,
 		    ChairTrackerSegment::BODY_NAME,
 		    ChairTrackerSegment::SEGMENT_NAME,
-                    6, 1)
+                    7, 1)
 {}
 
 ChairTrackerSegment::~ChairTrackerSegment ()
