@@ -65,7 +65,7 @@ LeftFootTracker::LeftFootTracker (Application& app)
 		    LeftFootTracker::BODY_NAME,
 		    LeftFootTracker::BODY_NAME,
 		    LeftFootTracker::SEGMENT_NAME,
-		    6, 1)
+		    4 + 3, 1)
 {}
 
 LeftFootTracker::~LeftFootTracker ()
