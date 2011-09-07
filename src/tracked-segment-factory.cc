@@ -26,6 +26,7 @@
 // Include all segments
 #include "segment-trackers/segment-waist-tracker.hh"
 #include "segment-trackers/left-foot-tracker.hh"
+#include "segment-trackers/head-tracker.hh"
 
 class Application;
 
@@ -42,6 +43,7 @@ void initializeSegmentTrackerRegister ()
 {
   REGISTER_TRACKER (WaistTrackerSegment);
   REGISTER_TRACKER (LeftFootTracker);
+  REGISTER_TRACKER (HeadTracker);
 }
 
 boost::shared_ptr<TrackedSegment>

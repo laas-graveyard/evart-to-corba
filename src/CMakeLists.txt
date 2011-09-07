@@ -44,6 +44,9 @@ ADD_EXECUTABLE(evart-to-corba
   segment-trackers/left-foot-tracker.cc
   segment-trackers/left-foot-tracker.hh
 
+  segment-trackers/head-tracker.cc
+  segment-trackers/head-tracker.hh
+
   evart-to-corba.cc
   ${ALL_IDL_STUBS}
   )
